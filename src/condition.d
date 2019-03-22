@@ -38,7 +38,7 @@ private class ConditionValues{
     //------------------------------------------------------------------------
     //
     //------------------------------------------------------------------------
-    @UniqueName(    "empty")
+    @Value
     static Condition empty(){static Condition res; return res !is null ? res : (res = new class Condition{
         this(){super("", Type.GOOD_LV1, /*max*/1);}
         override string toString(){return "";}
@@ -48,7 +48,7 @@ private class ConditionValues{
     //GOOD_LV1
     //
     //------------------------------------------------------------------------
-    @UniqueName(    "練")
+    @Value
     static Condition 練(){static Condition res; return res !is null ? res : (res = new class Condition{
         this(){super("格闘・神格・練術・銃術攻撃威力上昇", Type.GOOD_LV1, /*max*/4);}
         override void beforeDoAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -67,7 +67,7 @@ private class ConditionValues{
     //GOOD_LV2
     //
     //------------------------------------------------------------------------
-    @UniqueName(    "盾")
+    @Value
     static Condition 盾(){static Condition res; return res !is null ? res : (res = new class Condition{
         this(){super("被格闘・神格・練術・銃術攻撃威力減少", Type.GOOD_LV2, /*max*/4);}
         override void beforeBeAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -86,7 +86,7 @@ private class ConditionValues{
     //GOOD_LV3
     //
     //------------------------------------------------------------------------
-    @UniqueName(    "癒")
+    @Value
     static Condition 癒(){static Condition res; return res !is null ? res : (res = new class Condition{
         this(){super("毎ターンの開始時にHPを20%回復", Type.GOOD_LV3, /*max*/20);}
         override void phaseStart(Unit u){
@@ -109,7 +109,7 @@ private class ConditionValues{
     //BAD_LV1
     //
     //------------------------------------------------------------------------
-    @UniqueName(    "攻撃低下")
+    @Value
     static Condition 攻撃低下(){static Condition res; return res !is null ? res : (res = new class Condition{
         this(){super("攻撃倍率減少", Type.BAD_LV1, /*max*/6);}
         override void beforeDoAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -132,7 +132,7 @@ private class ConditionValues{
     //BAD_LV2
     //
     //------------------------------------------------------------------------
-    @UniqueName(    "防御低下")
+    @Value
     static Condition 防御低下(){static Condition res; return res !is null ? res : (res = new class Condition{
         this(){super("被攻撃倍率増加", Type.BAD_LV2, /*max*/6);}
         override void beforeBeAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -155,7 +155,7 @@ private class ConditionValues{
     //BAD_LV3
     //
     //------------------------------------------------------------------------
-    @UniqueName(    "焔")
+    @Value
     static Condition 焔(){static Condition res; return res !is null ? res : (res = new class Condition{
         this(){super("毎ターン開始時、最大・現HP-5%", Type.BAD_LV3, /*max*/20);}
         override void phaseStart(Unit u){

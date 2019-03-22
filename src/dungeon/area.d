@@ -71,7 +71,7 @@ abstract class Area{
 
 private class AreaValues{
     //-----------------------------------------------------
-    @UniqueName("再構成トンネル")
+    @Value
     static Area  再構成トンネル(){static Area res; return res !is null ? res : (res = new class Area{
         this(){super(new Img("img/再構成トンネル.png"));}
     });}

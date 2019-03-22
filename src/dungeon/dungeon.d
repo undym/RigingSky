@@ -52,7 +52,7 @@ abstract class Dungeon{
     bool isVisible();
     IGoods getTresureKey();
     Tresure[] getTresures();
-    IGoods[] getSpecialDropItems();
+    IGoods[] getTrendItems();
     protected void setBossInner();
     protected void setExInner();
 
@@ -65,27 +65,27 @@ abstract class Dungeon{
     }
 
     Event rndEvent(){
-        if(uniform(0f,1f) < 0.002){
+        if(uniform(0.0,1.0) < 0.002){
             return Event.TRESURE;
         }
-        if(uniform(0f,1f) < 0.002){
+        if(uniform(0.0,1.0) < 0.002){
             return Event.EX_BATTLE;
         }
-        if(uniform(0f,1f) < 0.2){
-            if(getRank() >= 1 && uniform(0f,1f) < 0.08){
+        if(uniform(0.0,1.0) < 0.2){
+            if(getRank() >= 1 && uniform(0.0,1.0) < 0.08){
                 Event[] candidates = [Event.丸い箱];
                 return candidates.choice;
             }
             return Event.BOX;
         }
-        if(uniform(0f,1f) < 0.2){
+        if(uniform(0.0,1.0) < 0.2){
             return Event.BATTLE;
         }
-        if(uniform(0f,1f) < 0.08){
+        if(uniform(0.0,1.0) < 0.08){
             return Event.REST;
         }
-        if(uniform(0f,1f) < 0.04){
-            if(getRank() >= 2 && uniform(0f,1f) < 0.1){return Event.TRAP_LV2;}
+        if(uniform(0.0,1.0) < 0.04){
+            if(getRank() >= 2 && uniform(0.0,1.0) < 0.1){return Event.TRAP_LV2;}
             return Event.TRAP_LV1;
         }
         return Event.empty;
@@ -120,11 +120,8 @@ abstract class Dungeon{
             
         }
 
-        IGoods[] special_drop_items = this.getSpecialDropItems();
-        if(special_drop_items){
-            foreach(i; 0..enemy_num){
-                if(uniform(0f,1f) <= 0.1){Unit.enemies[i].setDropItem( special_drop_items.choice );}
-            }
+        if(this.getTresureKey() != IGoods.empty && uniform(0.0,1.0) <= 0.003){
+            Unit.enemies[0].setDropItem( this.getTresureKey() );
         }
     }
     
@@ -171,19 +168,20 @@ private class DungeonValues{
     //-----------------------------------------------------
     //
     //-----------------------------------------------------
-    @UniqueName(  "はじまりの街")
-    static Dungeon はじまりの街(){static Dungeon res; return res !is null ? res : (res = new class Dungeon{
+    @Value
+    static Dungeon はじまりの丘(){static Dungeon res; return res !is null ? res : (res = new class Dungeon{
         this(){super(Area.再構成トンネル, /*rank*/0, /*au*/50, FRect(0.35, 0.45, 0.3, 0.1));}
-        override bool isVisible()       {return true;}
-        override IGoods getTresureKey() {return Item.はじまりの街の財宝の鍵;}
-        override Tresure[] getTresures(){return [Tresure(Eq.良い棒, 1)];}
-        override IGoods[] getSpecialDropItems(){return [Item.草, Item.枝];}
+        override bool isVisible()        {return true;}
+        override IGoods getTresureKey()  {return Item.はじまりの丘の財宝の鍵;}
+        override Tresure[] getTresures() {return [Tresure(Eq.良い棒, 1)];}
+        override IGoods[] getTrendItems(){return [Item.草, Item.枝, Item.石, Item.泥];}
         override void setBossInner(){
             foreach(e; Unit.enemies){
                 e.prm!"MAX_HP".base = 20;
             }
 
             EUnit e = Unit.enemies[0];
+            Job.しんまい.setEnemy(e, /*lv*/2);
             e.name = "ボス";
             e.prm!"MAX_HP".base = 40;
         }
@@ -193,14 +191,46 @@ private class DungeonValues{
             }
 
             EUnit e = Unit.enemies[0];
+            Job.魔法使い.setEnemy(e, /*lv*/3);
             e.name = "EX";
             e.prm!"MAX_HP".base = 80;
+            e.setDropItem( Eq.盾の盾 );
         }
         override void runClearEvent(const int clear_num){
             if(clear_num == 1){
                 Util.msg.set("[合成]が解放された！！！"); cwait;
             }
         }
+    });}
+    @Value
+    static Dungeon 見知らぬ海岸(){static Dungeon res; return res !is null ? res : (res = new class Dungeon{
+        this(){super(Area.再構成トンネル, /*rank*/1, /*au*/100, FRect(0.7, 0.1, 0.3, 0.1));}
+        override bool isVisible()        {return Dungeon.はじまりの丘.clear_num > 0;}
+        override IGoods getTresureKey()  {return Item.見知らぬ海岸の財宝の鍵;}
+        override Tresure[] getTresures() {return [Tresure(Eq.布, 1)];}
+        override IGoods[] getTrendItems(){return [Item.ピートモス, Item.腐葉土];}
+        override void setBossInner(){
+            foreach(e; Unit.enemies){
+                e.prm!"MAX_HP".base = 30;
+            }
+
+            EUnit e = Unit.enemies[0];
+            Job.剣士.setEnemy(e, /*lv*/3);
+            e.name = "ボス";
+            e.prm!"MAX_HP".base = 45;
+        }
+        override void setExInner(){
+            foreach(e; Unit.enemies){
+                e.prm!"MAX_HP".base = 40;
+            }
+
+            EUnit e = Unit.enemies[0];
+            Job.魔法使い.setEnemy(e, /*lv*/4);
+            e.name = "EX";
+            e.prm!"MAX_HP".base = 95;
+            e.setDropItem( Eq.魔ヶ玉の手首飾り );
+        }
+        override void runClearEvent(const int clear_num){}
     });}
     //-----------------------------------------------------
     //

@@ -10,6 +10,8 @@ abstract class Item: IGoods{
     mixin MGoods;
     mixin Values!ItemValues;
 
+    enum NO_SELL = 0;
+
     enum Type{
         蘇生,
         HP回復,
@@ -151,32 +153,14 @@ abstract class Item: IGoods{
         this.box = box;
     }
 
+    int getPrice(){return NO_SELL;}
 
-
+    Composition getComposition(){return Composition.empty;}
 
 
 
 }
 
-
-
-private void healHP(Unit target, double value){
-    target.hp += value;
-    target.fixPrm;
-
-    
-    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.GREEN );
-    Util.msg.set(format!"%sのHPが%.0f回復した"(target.name, value));
-}
-
-private void healMP(Unit target, double value){
-    target.mp += value;
-    target.fixPrm;
-
-    
-    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.PINK );
-    Util.msg.set(format!"%sのMPが%.0f回復した"(target.name, value));
-}
 
 unittest{
     enum base = 10.0;
@@ -200,14 +184,34 @@ unittest{
 }
 
 
+private void healHP(Unit target, double value){
+    target.hp += value;
+    target.fixPrm;
+
+    
+    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.GREEN );
+    Util.msg.set(format!"%sのHPが%.0f回復した"(target.name, value));
+}
+
+private void healMP(Unit target, double value){
+    target.mp += value;
+    target.fixPrm;
+
+    
+    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.PINK );
+    Util.msg.set(format!"%sのMPが%.0f回復した"(target.name, value));
+}
+
+
+
 private class ItemValues{
     //-------------------------------------------------------------
     //
     //蘇生
     //
     //-------------------------------------------------------------
-    @UniqueName(           "サンタクララ薬")
-    static Item サンタクララ薬(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  サンタクララ薬(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("一体をHP1で蘇生",
             Type.蘇生, /*rank*/0, /*box*/true);
 
@@ -221,14 +225,16 @@ private class ItemValues{
                 }
             });
         }
+
+        override int getPrice(){return 100;}
     });}
     //-------------------------------------------------------------
     //
     //HP回復
     //
     //-------------------------------------------------------------
-    @UniqueName(           "スティックパン")
-    static Item スティックパン(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  スティックパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+10",
             Type.HP回復, /*rank*/0, /*box*/true);
 
@@ -236,9 +242,10 @@ private class ItemValues{
                 healHP( u, 10 );
             });
         }
+        override int getPrice(){return 20;}
     });}
-    @UniqueName(           "ロングスティックパン")
-    static Item ロングスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  ロングスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+20",
             Type.HP回復, /*rank*/1, /*box*/true);
 
@@ -246,9 +253,10 @@ private class ItemValues{
                 healHP( u, 20 );
             });
         }
+        override int getPrice(){return 60;}
     });}
-    @UniqueName(           "ダブルスティックパン")
-    static Item ダブルスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  ダブルスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+40",
             Type.HP回復, /*rank*/2, /*box*/true);
 
@@ -256,9 +264,10 @@ private class ItemValues{
                 healHP( u, 40 );
             });
         }
+        override int getPrice(){return 200;}
     });}
-    @UniqueName(           "苺ちゃんのパン")
-    static Item 苺ちゃんのパン(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  苺ちゃんのパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+80",
             Type.HP回復, /*rank*/3, /*box*/true);
 
@@ -267,8 +276,8 @@ private class ItemValues{
             });
         }
     });}
-    @UniqueName(           "ドラッグ")
-    static Item ドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  ドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+10%"
             ,Type.HP回復, /*rank*/3, /*box*/true);
 
@@ -277,8 +286,8 @@ private class ItemValues{
             });
         }
     });}
-    @UniqueName(           "LAドラッグ")
-    static Item LAドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  LAドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+20%"
             ,Type.HP回復, /*rank*/4, /*box*/true);
 
@@ -288,8 +297,8 @@ private class ItemValues{
         }
         override string toString(){return "L.A.ドラッグ";}
     });}
-    @UniqueName(           "ロシアドラッグ")
-    static Item ロシアドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  ロシアドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+30%"
             ,Type.HP回復, /*rank*/5, /*box*/true);
 
@@ -298,8 +307,8 @@ private class ItemValues{
             });
         }
     });}
-    @UniqueName(           "スティックパン超キラキラ")
-    static Item スティックパン超キラキラ(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  スティックパン超キラキラ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+999"
             ,Type.HP回復, /*rank*/9, /*box*/true);
 
@@ -314,8 +323,8 @@ private class ItemValues{
     //MP回復
     //
     //-------------------------------------------------------------
-    @UniqueName(           "蛍草")
-    static Item 蛍草(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  蛍草(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("MP+10"
             ,Type.MP回復, /*rank*/0, /*box*/true);
 
@@ -324,8 +333,8 @@ private class ItemValues{
             });
         }
     });}
-    @UniqueName(           "赤葉草")
-    static Item 赤葉草(){static Item res; return res !is null ? res : (res = new class Item{
+    @Value
+    static Item  赤葉草(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("MP+20"
             ,Type.MP回復, /*rank*/2, /*box*/true);
 
@@ -339,40 +348,40 @@ private class ItemValues{
     //成長
     //
     //-------------------------------------------------------------
-    @UniqueName(           "いざなみの命")
-    static Item いざなみの命(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("最大HP+1",
-            Type.成長, /*rank*/9, /*box*/true);
+    @Value
+    static Item  いざなみの命(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("最大HP+1"
+            ,Type.成長, /*rank*/9, /*box*/true);
 
             setUseIn!("FIELD","DUNGEON")((u){
                 u.prm!"MAX_HP".base += 1;
             });
         }
     });}
-    @UniqueName(           "この花の咲くや姫")
-    static Item この花の咲くや姫(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("力+1",
-            Type.成長, /*rank*/9, /*box*/true);
+    @Value
+    static Item  この花の咲くや姫(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("力+1"
+            ,Type.成長, /*rank*/9, /*box*/true);
 
             setUseIn!("FIELD","DUNGEON")((u){
                 u.prm!"STR".base += 1;
             });
         }
     });}
-    @UniqueName(           "つくよみの命")
-    static Item つくよみの命(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("魔+1",
-            Type.成長, /*rank*/9, /*box*/true);
+    @Value
+    static Item  つくよみの命(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("魔+1"
+            ,Type.成長, /*rank*/9, /*box*/true);
 
             setUseIn!("FIELD","DUNGEON")((u){
                 u.prm!"MAG".base += 1;
             });
         }
     });}
-    @UniqueName(           "よもつおお神")
-    static Item よもつおお神(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("光+1",
-            Type.成長, /*rank*/9, /*box*/true);
+    @Value
+    static Item  よもつおお神(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("光+1"
+            ,Type.成長, /*rank*/9, /*box*/true);
 
             setUseIn!("FIELD","DUNGEON")((u){
                 u.prm!"LIG".base += 1;
@@ -385,58 +394,73 @@ private class ItemValues{
     //
     //-------------------------------------------------------------
     //宝物鍵
-    @UniqueName(           "丸い鍵")
-    static Item 丸い鍵(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("丸い箱を開けられる",
-            Type.宝物鍵, /*rank*/3, /*box*/true);}
+    @Value
+    static Item  丸い鍵(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("丸い箱を開けられる"
+            ,Type.宝物鍵, /*rank*/3, /*box*/true);}
     });}
     //-------------------------------------------------------------
     //財宝鍵
-    @UniqueName(           "はじまりの街の財宝の鍵")
-    static Item はじまりの街の財宝の鍵(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("",
-            Type.財宝鍵, /*rank*/0, /*box*/false);}
+    @Value
+    static Item  はじまりの丘の財宝の鍵(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super(""
+            ,Type.財宝鍵, /*rank*/10, /*box*/false);}
+    });}
+    @Value
+    static Item  見知らぬ海岸の財宝の鍵(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super(""
+            ,Type.財宝鍵, /*rank*/10, /*box*/false);}
     });}
     //-------------------------------------------------------------
     //
     //素材
     //
     //-------------------------------------------------------------
-    @UniqueName(           "石")
-    static Item 石(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("石だ",
-            Type.素材, /*rank*/0, /*box*/true);}
+    @Value
+    static Item  石(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("石だ"
+            ,Type.素材, /*rank*/0, /*box*/true);}
     });}
-    @UniqueName(           "草")
-    static Item 草(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("草だ",
-            Type.素材, /*rank*/0, /*box*/true);}
+    @Value
+    static Item  草(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("草だ"
+            ,Type.素材, /*rank*/0, /*box*/true);}
     });}
-    @UniqueName(           "泥")
-    static Item 泥(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("",
-            Type.素材, /*rank*/0, /*box*/true);}
+    @Value
+    static Item  泥(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super(""
+            ,Type.素材, /*rank*/0, /*box*/true);}
     });}
-    @UniqueName(           "枝")
-    static Item 枝(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("",
-            Type.素材, /*rank*/0, /*box*/true);}
+    @Value
+    static Item  枝(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super(""
+            ,Type.素材, /*rank*/0, /*box*/true);}
+    });}
+    @Value
+    static Item  腐葉土(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("土"
+            ,Type.素材, /*rank*/1, /*box*/true);}
+    });}
+    @Value
+    static Item  ピートモス(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("土"
+            ,Type.素材, /*rank*/1, /*box*/true);}
     });}
     //-------------------------------------------------------------
     //
     //メモ
     //
     //-------------------------------------------------------------
-    @UniqueName(           "F1のメモ")
-    static Item F1のメモ(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("F1キーでオプション画面が開く",
-            Type.メモ, /*rank*/0, /*box*/true);}
+    @Value
+    static Item  F1のメモ(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("F1キーでオプション画面が開く"
+            ,Type.メモ, /*rank*/0, /*box*/true);}
         override int getMaxNum(){return 1;}
     });}
-    @UniqueName(           "メモのメモ")
-    static Item メモのメモ(){static Item res; return res !is null ? res : (res = new class Item{
-        this(){super("最強らしい",
-            Type.メモ, /*rank*/6, /*box*/true);}
+    @Value
+    static Item  メモのメモ(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("最強らしい"
+            ,Type.メモ, /*rank*/8, /*box*/true);}
         override int getMaxNum(){return 1;}
     });}
     //-------------------------------------------------------------

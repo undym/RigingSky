@@ -87,12 +87,12 @@ private class EqValues{
     //頭
     //
     //------------------------------------------------------------------
-    @UniqueName("髪")
+    @Value
     static Eq    髪(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.頭, /*lv*/0);}
     });}
-    @UniqueName("クロワッサン")
+    @Value
     static Eq    クロワッサン(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("最大HP+50"
             ,Pos.頭, /*lv*/50);}
@@ -118,13 +118,13 @@ private class EqValues{
     //剣
     //
     //------------------------------------------------------------------
-    @UniqueName("棒")
+    @Value
     static Eq    棒(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.剣, /*lv*/0);}
     });}
-    //はじまりの街・財宝
-    @UniqueName("良い棒")
+    //はじまりの丘・財宝
+    @Value
     static Eq    良い棒(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("全ステータス+10"
             ,Pos.剣, /*lv*/20);}
@@ -141,12 +141,13 @@ private class EqValues{
     //盾
     //
     //------------------------------------------------------------------
-    @UniqueName("親指")
+    @Value
     static Eq    親指(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.盾, /*lv*/0);}
     });}
-    @UniqueName("盾の盾")
+    //はじまりの丘・EX
+    @Value
     static Eq    盾の盾(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("戦闘開始時＜盾＞化"
             ,Pos.盾, /*lv*/30);}
@@ -161,12 +162,13 @@ private class EqValues{
     //体
     //
     //------------------------------------------------------------------
-    @UniqueName("襤褸切れ")
+    @Value
     static Eq    襤褸切れ(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.体, /*lv*/0);}
     });}
-    @UniqueName("布")
+    //見知らぬ海岸・財宝
+    @Value
     static Eq    布(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("最大HP+50"
             ,Pos.体, /*lv*/30);}
@@ -174,7 +176,7 @@ private class EqValues{
             u.prm!"MAX_HP".eq += 50;
         }
     });}
-    @UniqueName("毛皮")
+    @Value
     static Eq    毛皮(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("最大HP+10%"
             ,Pos.体, /*lv*/30);}
@@ -187,12 +189,12 @@ private class EqValues{
     //腰
     //
     //------------------------------------------------------------------
-    @UniqueName("ひも")
+    @Value
     static Eq    ひも(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.腰, /*lv*/0);}
     });}
-    @UniqueName("黒帯")
+    @Value
     static Eq    黒帯(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("格闘を受けた時、格闘攻撃で反撃する"
             ,Pos.腰, /*lv*/80);}
@@ -209,17 +211,23 @@ private class EqValues{
     //腕
     //
     //------------------------------------------------------------------
-    @UniqueName("リスト")
+    @Value
     static Eq    リスト(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.腕, /*lv*/0);}
+    });}
+    //見知らぬ海岸・EX
+    @Value
+    static Eq    魔ヶ玉の手首飾り(){static Eq res; return res !is null ? res : (res = new class Eq{
+        this(){super("毎ターンMP+10"
+            ,Pos.腕, /*lv*/10);}
     });}
     //------------------------------------------------------------------
     //
     //指
     //
     //------------------------------------------------------------------
-    @UniqueName("肩身の指輪")
+    @Value
     static Eq    肩身の指輪(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.指, /*lv*/0);}
@@ -229,12 +237,12 @@ private class EqValues{
     //脚
     //
     //------------------------------------------------------------------
-    @UniqueName("靴")
+    @Value
     static Eq    靴(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.脚, /*lv*/0);}
     });}
-    @UniqueName("ルクシオンの尾")
+    @Value
     static Eq    ルクシオンの尾(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("進む時、HP+1%"
             ,Pos.脚, /*lv*/0);}

@@ -43,12 +43,14 @@ abstract class EqEar: IForce, IGoods{
         this.info = info;
         this.appear_lv = appear_lv;
     }
+    
+    Composition getComposition(){return Composition.empty;}
 }
 
 
 private class EqEarValues{
     //------------------------------------------------------------------
-    @UniqueName("耳たぶ")
+    @Value
     static EqEar 耳たぶ(){static EqEar res; return res !is null ? res : (res = new class EqEar{
         this(){super(""
             ,/*lv*/0);}

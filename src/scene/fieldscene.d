@@ -65,6 +65,7 @@ class FieldScene: AbstScene{
 
 
 private ILayout createBtn(){
+    import goods.building;
 
     FrameLayout l = new FrameLayout;
     l.add({
@@ -100,7 +101,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> PlayData.job_btn_visible
+            ()=> Building.職業案内所.getComposition().exp > 0
             ,"ジョブ",{
                 import scene.jobchangescene;
                 JobChangeScene.ins.start;
@@ -110,7 +111,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> PlayData.eq_btn_visible
+            ()=> Building.着付け教室.getComposition().exp > 0
             ,"装備",{
                 import scene.eqscene;
                 EqScene.ins.start;
@@ -120,7 +121,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> PlayData.meisou_btn_visible
+            ()=> Building.瞑想屋.getComposition().exp > 0
             ,"瞑想",{
                 import scene.meisouscene;
                 MeisouScene.ins.start;
@@ -130,7 +131,17 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> PlayData.item_btn_visible
+            ()=> true
+            ,"お店",{
+                import scene.shopscene;
+                ShopScene.ins.start;
+                FieldScene.ins.setup();
+            },{
+
+            }
+        );
+        addBtn(
+            ()=> true
             ,"アイテム",{
                 import scene.itemscene;
                 ItemSceneField.ins.start;
@@ -140,7 +151,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> Dungeon.はじまりの街.clear_num > 0
+            ()=> Dungeon.はじまりの丘.clear_num > 0
             ,"合成",{
                 import scene.compositionscene;
                 CompositionScene.ins.start;
@@ -189,6 +200,8 @@ private ILayout createMain(){
                     Dungeon.escape = false;
                     Dungeon.now = d;
                     DungeonScene.ins.start;
+
+                    FieldScene.ins.setup();
 
                     fullCare();
                 },{

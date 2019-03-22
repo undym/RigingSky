@@ -62,6 +62,7 @@ class Save{
                     io.list( eq.getUniqueName(), (io2){
                         io2.io("num", eq.num);
                         io2.io("got", eq.got);
+                        io2.io("com", eq.getComposition().exp);
                     });
                 }
             });
@@ -70,6 +71,7 @@ class Save{
                     io.list( ear.getUniqueName(), (io2){
                         io2.io("num", ear.num);
                         io2.io("got", ear.got);
+                        io2.io("com", ear.getComposition().exp);
                     });
                 }
             });
@@ -174,6 +176,7 @@ class Save{
                     io.list(_item.getUniqueName(),(io_item){
                         io_item.io("num", _item.num);
                         io_item.io("got", _item.got);
+                        io_item.io("com", _item.getComposition().exp);
                     });
                 }
             });

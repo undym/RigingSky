@@ -46,13 +46,12 @@ abstract class Player{
 
 private class PlayerValues{
     //------------------------------------------------------------------
-    @UniqueName( "empty")
+    @Value
     static Player empty(){static Player res; return res !is null ? res : (res = new class Player{
             override protected PUnit create(){return new PUnit(this);}
             override protected void createInner(PUnit){}
     });}
-    //------------------------------------------------------------------
-    @UniqueName( "スメラギ")
+    @Value
     static Player スメラギ(){static Player res; return res !is null ? res : (res = new class Player{
             override protected void createInner(PUnit p){
                 p.tecs = [Tec.殴る, Tec.二刀, Tec.empty, Tec.empty, Tec.empty, Tec.empty];
@@ -60,8 +59,7 @@ private class PlayerValues{
                 p.prm!"STR".base = 5;
             }
     });}
-    //------------------------------------------------------------------
-    @UniqueName( "よしこ")
+    @Value
     static Player よしこ(){static Player res; return res !is null ? res : (res = new class Player{
             override protected void createInner(PUnit p){
                 p.job = Job.魔法使い;

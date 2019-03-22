@@ -65,6 +65,7 @@ class TitleScene: Scene{
         Item.サンタクララ薬.num += 5;
         Item.スティックパン.num += 10;
         Item.蛍草.num += 10;
+        PlayData.yen += 1000;
     }
 
     private void setContinue(){

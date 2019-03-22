@@ -192,6 +192,7 @@ class BattleScene: AbstScene{
     private void finishBattle(){
         foreach(e; Unit.enemies){
             e.exists = false;
+            e.clearDropItem();
         }
 
         foreach(p; Unit.players){
@@ -390,7 +391,7 @@ class BattleScene: AbstScene{
                         final switch(type){
                             case Type.NORMAL:
                                 Util.msg.set("逃走を試みた..."); cwait;
-                                if(uniform(0f,1f) <= 0.65){
+                                if(uniform(0.0,1.0) <= 0.65){
                                     Util.msg.set("成功"); cwait;
                                     escape();
                                 }else{

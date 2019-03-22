@@ -5,13 +5,14 @@ import undym;
 
 void main() {
     init();
-
+    
     import scene.titlescene;
     TitleScene.ins.start;
 
     import scene.fieldscene;
     FieldScene.ins.start;
 }
+
 
 private void init(){
     import util;

@@ -62,7 +62,7 @@ private class KeyBoxEvent: Event{
 
                     const int open = {
                         int res = base_open_num;
-                        while(uniform(0f,1f) <= 0.5){res++;}
+                        while(uniform(0.0,1.0) <= 0.5){res++;}
                         return res;
                     }();
 
@@ -92,7 +92,7 @@ private class EventValues{
     //---------------------------------------------------------------------
     //
     //---------------------------------------------------------------------
-    @UniqueName(           "empty")
+    @Value
     static Event empty(){static Event res; return res !is null ? res : (res = new class Event{
         import force;
         WalkMng walk_mng;
@@ -140,14 +140,19 @@ private class EventValues{
             walk_mng = new WalkMng();
         }
     });}
-    //---------------------------------------------------------------------
-    @UniqueName(           "BOX")
+    @Value
     static Event BOX(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
+                //ダンジョン特有入手アイテム
+                auto trend_items = Dungeon.now.getTrendItems();
+                if(trend_items && uniform(0.0,1.0) <= 0.15){
+                    trend_items.choice.add(1);
+                }
+                //通常入手アイテム
                 const int open = {
                     int res = 1;
-                    while(uniform(0f,1f) <= 0.15){res++;}
+                    while(uniform(0.0,1.0) <= 0.15){res++;}
                     return res;
                 }();
                 foreach(i; 0..open){
@@ -166,13 +171,13 @@ private class EventValues{
             ,/*reset_zoom*/true
         );}
     });}
-    @UniqueName(           "丸い箱")
+    @Value
     static Event 丸い箱(){static Event res; return res !is null ? res : (res = new KeyBoxEvent(
         ()=> Item.丸い鍵
         ,/*open*/3
         ,/*rank*/4
     ));}
-    @UniqueName(           "OPENED_KEY_BOX")
+    @Value
     static Event OPENED_KEY_BOX(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -185,7 +190,7 @@ private class EventValues{
             ,/*reset_zoom*/false
         );}
     });}
-    @UniqueName(           "TRESURE")
+    @Value
     static Event TRESURE(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -208,7 +213,7 @@ private class EventValues{
             ,/*reset_zoom*/true
         );}
     });}
-    @UniqueName(           "TRESURE_OPEN")
+    @Value
     static Event TRESURE_OPEN(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -236,11 +241,11 @@ private class EventValues{
             ,/*reset_zoom*/false
         );}
     });}
-    @UniqueName(           "REST")
+    @Value
     static Event REST(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
-                if(uniform(0f,1f) < 0.1f){
+                if(uniform(0.0,1.0) < 0.1f){
                     Util.msg.set("トイレ休憩した...");
                 }else{
                     Util.msg.set("休憩した...");
@@ -266,7 +271,7 @@ private class EventValues{
             }
         );}
     });}
-    @UniqueName(           "TRAP_LV1")
+    @Value
     static Event TRAP_LV1(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -294,7 +299,7 @@ private class EventValues{
             ,/*reset_zoom*/true
         );}
     });}
-    @UniqueName(           "TRAP_LV2")
+    @Value
     static Event TRAP_LV2(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -322,7 +327,7 @@ private class EventValues{
             ,/*reset_zoom*/true
         );}
     });}
-    @UniqueName(           "TRAP_BROKEN")
+    @Value
     static Event TRAP_BROKEN(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -335,7 +340,7 @@ private class EventValues{
             ,/*reset_zoom*/false
         );}
     });}
-    @UniqueName(           "BATTLE")
+    @Value
     static Event BATTLE(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -360,7 +365,7 @@ private class EventValues{
                 return Event.empty;//この部分には到達しない
         });}
     });}
-    @UniqueName(           "BOSS_BATTLE")
+    @Value
     static Event BOSS_BATTLE(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -391,7 +396,7 @@ private class EventValues{
                 return this;
         });}
     });}
-    @UniqueName(           "EX_BATTLE")
+    @Value
     static Event EX_BATTLE(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen
@@ -419,7 +424,7 @@ private class EventValues{
                 return this;
         });}
     });}
-    @UniqueName(           "ESCAPE_DUNGEON")
+    @Value
     static Event ESCAPE_DUNGEON(){static Event res; return res !is null ? res : (res = new class Event{
         this(){super(
             {//happen

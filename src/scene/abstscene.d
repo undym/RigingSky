@@ -426,7 +426,6 @@ class DrawUpperRight: InnerLayout{
     private this(){
         add(new FrameLayout()
             .add(new YLayout()
-                .add(new Label(Util.font, ()=> format!"%s円"(PlayData.yen), Color.YELLOW).setDrawPoint!"right")
                 .add(ILayout.empty)
                 .add(ILayout.empty)
                 .add(ILayout.empty)

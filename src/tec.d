@@ -292,8 +292,8 @@ private class TecValues{
     //----------------------------------------------------------------
     //
     //----------------------------------------------------------------
-    @UniqueName("empty")
-    static Tec   empty(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec empty(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("empty.info"
             ,Type.格闘, Targeting.SELECT
             ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
@@ -304,8 +304,8 @@ private class TecValues{
     //格闘
     //
     //------------------------------------------------------------------
-    @UniqueName("殴る")
-    static Tec   殴る(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 殴る(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に格闘攻撃"
             ,Type.格闘, Targeting.SELECT
             ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
@@ -314,14 +314,14 @@ private class TecValues{
             super.runInner(attacker, target, dmg);
         }
     });}
-    @UniqueName("二刀")
-    static Tec   二刀(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 二刀(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に2回格闘攻撃"
             ,Type.格闘, Targeting.SELECT 
             ,/*mp*/0, /*tp*/20, /*num*/()=>2, /*mul*/1.0, /*hit*/1.0);}
     });}
-    @UniqueName("静かなる動き")
-    static Tec   静かなる動き(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 静かなる動き(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に格闘攻撃x3"
             ,Type.格闘, Targeting.SELECT 
             ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/3, /*hit*/1.0);
@@ -334,8 +334,8 @@ private class TecValues{
             return dmg;
         }
     });}
-    @UniqueName("タックル")
-    static Tec   タックル(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec タックル(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に格闘攻撃x1.2、相手を＜防↓＞化"
             ,Type.格闘, Targeting.SELECT
             ,/*mp*/0, /*tp*/30, /*num*/()=>1, /*mul*/1.2, /*hit*/1.0);}
@@ -346,8 +346,8 @@ private class TecValues{
         }
     });}
     //------------------------------------------------------------------
-    @UniqueName("格闘攻撃UP")
-    static Tec   格闘攻撃UP(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 格闘攻撃UP(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("格闘攻撃+30%"
             ,Type.格闘);}
         override void beforeDoAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -361,22 +361,21 @@ private class TecValues{
     //魔法
     //
     //------------------------------------------------------------------
-    @UniqueName("ヴァハ")
-    static Tec   ヴァハ(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec ヴァハ(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に魔法攻撃"
             ,Type.魔法, Targeting.SELECT
             ,/*mp*/10, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
     });}
-    //------------------------------------------------------------------
-    @UniqueName("エヴィン")
-    static Tec   エヴィン(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec エヴィン(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に魔法攻撃x1.5"
             ,Type.魔法, Targeting.SELECT
             ,/*mp*/20, /*tp*/0, /*num*/()=>1, /*mul*/1.5, /*hit*/1.0);}
     });}
     //------------------------------------------------------------------
-    @UniqueName("魔法攻撃UP")
-    static Tec   魔法攻撃UP(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 魔法攻撃UP(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("魔法攻撃+30%"
             ,Type.魔法);}
         override void beforeDoAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -390,8 +389,8 @@ private class TecValues{
     //神格
     //
     //------------------------------------------------------------------
-    @UniqueName("天籟")
-    static Tec   天籟(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 天籟(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に神格攻撃"
             ,Type.神格, Targeting.SELECT
             ,/*mp*/0, /*tp*/10, /*num*/()=>1, /*mul*/1.0, /*hit*/1.3);}
@@ -401,8 +400,8 @@ private class TecValues{
     //暗黒
     //
     //------------------------------------------------------------------
-    @UniqueName("暗黒剣")
-    static Tec   暗黒剣(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 暗黒剣(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に暗黒攻撃x1.5 HP-10%"
             ,Type.暗黒, Targeting.SELECT
             ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.5, /*hit*/1.0);}
@@ -413,8 +412,8 @@ private class TecValues{
             selfHarm( attacker, attacker.prm!"MAX_HP".total / 10 );
         }
     });}
-    @UniqueName("吸血")
-    static Tec   吸血(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 吸血(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("[自分・闇]-[相手・光]分のHPを吸収"
             ,Type.暗黒, Targeting.SELECT
             ,/*mp*/20, /*tp*/20, /*num*/()=>1, /*mul*/1.0, /*hit*/9.0);}
@@ -429,8 +428,8 @@ private class TecValues{
             heal( attacker, value );
         }
     });}
-    @UniqueName("VampireBloodyStar")
-    static Tec   VampireBloodyStar(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec VampireBloodyStar(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("敵全体に吸血"
             ,Type.暗黒, Targeting.ALL
             ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/9.0);
@@ -440,8 +439,8 @@ private class TecValues{
             Tec.吸血.runInner( attacker, target, dmg );
         }
     });}
-    @UniqueName("宵闇")
-    static Tec   宵闇(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 宵闇(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("暗黒攻撃x2"
             ,Type.暗黒);}
         override void beforeDoAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -455,8 +454,8 @@ private class TecValues{
     //練術
     //
     //------------------------------------------------------------------
-    @UniqueName("スネイク")
-    static Tec   スネイク(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec スネイク(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("敵全体に練術攻撃"
             ,Type.練術, Targeting.ALL
             ,/*mp*/0, /*tp*/15, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
@@ -466,15 +465,14 @@ private class TecValues{
     //過去
     //
     //------------------------------------------------------------------
-    @UniqueName("念")
-    static Tec   念(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 念(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に過去攻撃"
             ,Type.過去, Targeting.SELECT
             ,/*mp*/10, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.2);}
     });}
-    //------------------------------------------------------------------
-    @UniqueName("念力")
-    static Tec   念力(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 念力(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("敵全体に過去攻撃"
             ,Type.過去, Targeting.ALL
             ,/*mp*/40, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.2);}
@@ -484,8 +482,8 @@ private class TecValues{
     //回復
     //
     //------------------------------------------------------------------
-    @UniqueName("数珠")
-    static Tec   数珠(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 数珠(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体を光依存で回復x2"
             ,Type.回復, Targeting.SELECT | Targeting.ONLY_FRIEND
             ,/*mp*/10, /*tp*/0, /*num*/()=>1, /*mul*/2.0, /*hit*/2.0);}
@@ -494,9 +492,8 @@ private class TecValues{
             heal( target, dmg.calc );
         }
     });}
-    //------------------------------------------------------------------
-    @UniqueName("良き占い")
-    static Tec   良き占い(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 良き占い(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("味方全体を光依存で回復"
             ,Type.回復, Targeting.ALL | Targeting.ONLY_FRIEND
             ,/*mp*/40, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/2.0);}
@@ -505,9 +502,8 @@ private class TecValues{
             heal( target, dmg.calc );
         }
     });}
-    //------------------------------------------------------------------
-    @UniqueName("ユグドラシル")
-    static Tec   ユグドラシル(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec ユグドラシル(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("味方全体を復活・全回復"
             ,Type.回復, Targeting.ALL | Targeting.ONLY_FRIEND
             ,/*mp*/40, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/2.0);}
@@ -519,9 +515,8 @@ private class TecValues{
             revive( target, target.prm!"MAX_HP".total );
         }
     });}
-    //------------------------------------------------------------------
-    @UniqueName("HP自動回復")
-    static Tec   HP自動回復(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec HP自動回復(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("毎ターンHP+1%"
             ,Type.回復);}
         override void phaseStart(Unit u){
@@ -534,8 +529,8 @@ private class TecValues{
     //状態
     //
     //------------------------------------------------------------------
-    @UniqueName("練気")
-    static Tec   練気(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 練気(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("自分を＜練＞(格闘・暗黒・練術・銃術攻撃x1.5)化"
             ,Type.状態, Targeting.SELF
             ,/*mp*/0, /*tp*/10, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
@@ -550,8 +545,8 @@ private class TecValues{
     //その他
     //
     //------------------------------------------------------------------
-    @UniqueName("何もしない")
-    static Tec   何もしない(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 何もしない(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("なーんにもしない"
             ,Type.その他, Targeting.SELF
             ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
@@ -560,8 +555,8 @@ private class TecValues{
         }
     });}
     //------------------------------------------------------------------
-    @UniqueName("体力回路")
-    static Tec   体力回路(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 体力回路(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("戦闘開始時、最大HP・現在HP+10%"
             ,Type.その他);}
         override void battleStart(Unit u){
@@ -572,8 +567,8 @@ private class TecValues{
         }
     });}
     //------------------------------------------------------------------
-    @UniqueName("魔力回路")
-    static Tec   魔力回路(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 魔力回路(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("戦闘開始時、最大MP・現在MP+10%"
             ,Type.その他);}
         override void battleStart(Unit u){
@@ -584,8 +579,8 @@ private class TecValues{
         }
     });}
     //------------------------------------------------------------------
-    @UniqueName("戦術回路")
-    static Tec   戦術回路(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 戦術回路(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("戦闘開始時、最大TP・現在TP+10%"
             ,Type.その他);}
         override void battleStart(Unit u){
@@ -603,8 +598,8 @@ private class TecValues{
     //習得もセットもしない技。
     //
     //------------------------------------------------------------------
-    @UniqueName("格闘カウンター")
-    static Tec   格闘カウンター(){static Tec res; return res !is null ? res : (res = new class Tec{
+    @Value
+    static Tec 格闘カウンター(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("格闘攻撃でのカウンター技。この技は習得せず、セットもしない。"
             ,Type.格闘, Targeting.SELECT
             ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}

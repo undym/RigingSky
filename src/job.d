@@ -128,8 +128,8 @@ private string rndEnemyName(){
 private class JobValues{
     
     //-----------------------------------------------------
-    @UniqueName(           "しんまい")
-    static Job しんまい(){static Job res; return res !is null ? res : (res = new class Job{
+    @Value
+    static Job   しんまい(){static Job res; return res !is null ? res : (res = new class Job{
         this(){super("新米"
             ,/*lvup_exp*/DEF_LVUP_EXP
             ,/*appear_lv*/0
@@ -141,9 +141,8 @@ private class JobValues{
             e.tecs = [Tec.殴る, Tec.殴る, Tec.殴る, Tec.練気, Tec.練気, Tec.練気, Tec.何もしない, Tec.何もしない];
         }
     });}
-    //-----------------------------------------------------
-    @UniqueName(           "見習い")
-    static Job 見習い(){static Job res; return res !is null ? res : (res = new class Job{
+    @Value
+    static Job   見習い(){static Job res; return res !is null ? res : (res = new class Job{
         this(){super("見習い"
             ,/*lvup_exp*/DEF_LVUP_EXP * 2
             ,/*appear_lv*/10
@@ -152,12 +151,11 @@ private class JobValues{
         );}
         override bool canJobChange(PUnit p){return p.isMastered(Job.しんまい);}
         override void setEnemyInner(EUnit e){
-            e.tecs = [Tec.殴る, Tec.殴る, Tec.殴る, Tec.練気, Tec.戦術回路, Tec.魔力回路, Tec.体力回路, Tec.体力回路];
+            e.tecs = [Tec.殴る, Tec.殴る, Tec.殴る, Tec.練気, Tec.戦術回路, Tec.魔力回路, Tec.体力回路, Tec.何もしない];
         }
     });}
-    //-----------------------------------------------------
-    @UniqueName(           "剣士")
-    static Job 剣士(){static Job res; return res !is null ? res : (res = new class Job{
+    @Value
+    static Job   剣士(){static Job res; return res !is null ? res : (res = new class Job{
         this(){super("剣士"
             ,/*lvup_exp*/DEF_LVUP_EXP * 2
             ,/*appear_lv*/2
@@ -169,9 +167,8 @@ private class JobValues{
             e.tecs = [Tec.殴る, Tec.殴る, Tec.殴る, Tec.二刀, Tec.二刀, Tec.格闘攻撃UP, Tec.殴る, Tec.殴る];
         }
     });}
-    //-----------------------------------------------------
-    @UniqueName(           "魔法使い")
-    static Job 魔法使い(){static Job res; return res !is null ? res : (res = new class Job{
+    @Value
+    static Job   魔法使い(){static Job res; return res !is null ? res : (res = new class Job{
         this(){super("魔法を使う"
             ,/*lvup_exp*/DEF_LVUP_EXP * 2
             ,/*appear_lv*/5
@@ -183,9 +180,8 @@ private class JobValues{
             e.tecs = [Tec.殴る, Tec.殴る, Tec.殴る, Tec.ヴァハ, Tec.ヴァハ, Tec.ヴァハ, Tec.エヴィン, Tec.魔法攻撃UP];
         }
     });}
-    //-----------------------------------------------------
-    @UniqueName(           "天使")
-    static Job 天使(){static Job res; return res !is null ? res : (res = new class Job{
+    @Value
+    static Job   天使(){static Job res; return res !is null ? res : (res = new class Job{
         this(){super("回復に秀でたクラス"
             ,/*lvup_exp*/DEF_LVUP_EXP * 2
             ,/*appear_lv*/10
@@ -197,9 +193,8 @@ private class JobValues{
             e.tecs = [Tec.殴る, Tec.殴る, Tec.天籟, Tec.天籟, Tec.天籟, Tec.数珠, Tec.数珠, Tec.良き占い];
         }
     });}
-    //-----------------------------------------------------
-    @UniqueName(           "暗黒剣士")
-    static Job 暗黒剣士(){static Job res; return res !is null ? res : (res = new class Job{
+    @Value
+    static Job   暗黒剣士(){static Job res; return res !is null ? res : (res = new class Job{
         this(){super("自分の身を削り強力な攻撃を放つ"
             ,/*lvup_exp*/DEF_LVUP_EXP * 2
             ,/*appear_lv*/10
