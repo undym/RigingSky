@@ -50,7 +50,7 @@ class CompositionScene: AbstScene{
                         gb.add(visible() ? name : name.tr(".","？","cd"), {
                             if(!visible()){return;}
                             push();
-                        });
+                        }).set!"string"(()=> visible() ? Color.WHITE : Color.GRAY);
                     }
                     gb.add("建築",{
                         BuildingList.ins.setList();
@@ -154,7 +154,7 @@ private class BuildingList: InnerLayout{
                             int n = i;
                             i++;
 
-                            Color delegate() create_color = ()=> mat.goods.num >= mat.num ? Color.WHITE : Color.L_GRAY;
+                            Color delegate() create_color = ()=> mat.goods.num >= mat.num ? Color.WHITE : Color.GRAY;
 
                             l.add(new XLayout()
                                 .add(
@@ -190,7 +190,8 @@ private class BuildingList: InnerLayout{
             .filter!(b=> b.getComposition().isVisible())
             .each!((b){
                 Composition com = b.getComposition();
-                list.add( b.toString(), &com.exp,{
+                string delegate() exp = ()=> com.exp < com.getLimit() ? format!"%s"(com.exp) : "★";
+                list.add( ()=> b.toString(), exp, {
                     if(!com.canRun()){return;}
                     com.run();
                 },{

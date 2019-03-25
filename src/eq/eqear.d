@@ -14,6 +14,7 @@ abstract class EqEar: IForce, IGoods{
     mixin MForce;
     mixin MGoods;
     mixin Values!EqEarValues;
+    mixin Shop;
 
     enum EAR_NUM = 2;
     //appear_lvがこの値の場合、ランダムな敵には装備されない
@@ -55,5 +56,51 @@ private class EqEarValues{
         this(){super(""
             ,/*lv*/0);}
     });}
+    @Value
+    static EqEar 耳介筋(){static EqEar res; return res !is null ? res : (res = new class EqEar{
+        this(){super("力+7"
+            ,/*lv*/40);}
+        override int getPrice(){return 1000;}
+        override void equip(Unit u){
+            u.prm!"STR".eq += 7;
+        }
+    });}
+    @Value
+    static EqEar トンガリ(){static EqEar res; return res !is null ? res : (res = new class EqEar{
+        this(){super("魔+7"
+            ,/*lv*/40);}
+        override int getPrice(){return 1000;}
+        override void equip(Unit u){
+            u.prm!"MAG".eq += 7;
+        }
+    });}
+    @Value
+    static EqEar 魔ヶ玉のピアス(){static EqEar res; return res !is null ? res : (res = new class EqEar{
+        this(){super("ターン開始時MP+5"
+            ,/*lv*/30);}
+        override int getPrice(){return 2000;}
+        override void phaseStart(Unit u){
+            u.mp += 5;
+        }
+    });}
+    @Value
+    static EqEar 水晶のピアス(){static EqEar res; return res !is null ? res : (res = new class EqEar{
+        this(){super("戦闘終了時HP+5%"
+            ,/*lv*/30);}
+        override int getPrice(){return 2000;}
+        override void battleEnd(Unit u){
+            u.hp += u.prm!"MAX_HP".total * 0.05;
+        }
+    });}
+    @Value
+    static EqEar 現し人のピアス(){static EqEar res; return res !is null ? res : (res = new class EqEar{
+        this(){super("攻撃回避率+7%"
+            ,/*lv*/120);}
+        override int getPrice(){return Unit.players[0].prm!"LV".total >= 80 ? 20000 : EqEar.NOT_FOR_SALE;}
+        override void beforeBeAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
+            dmg.hit *= 0.93;
+        }
+    });}
+    
     //------------------------------------------------------------------
 }

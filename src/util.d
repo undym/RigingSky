@@ -31,13 +31,6 @@ class PlayData{
 
     static:
         int yen;
-        
-        bool eq_btn_visible;
-        bool tec_btn_visible;
-        bool item_btn_visible = true;
-        bool save_btn_visible = true;
-        bool job_btn_visible;
-        bool meisou_btn_visible;
 }
 
 

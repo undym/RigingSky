@@ -129,3 +129,9 @@ abstract class Composition{
 
     void runInner(){}
 }
+
+
+mixin template Shop(){
+    enum NOT_FOR_SALE = 0;
+    int getPrice(){return NOT_FOR_SALE;}
+}

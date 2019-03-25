@@ -164,7 +164,7 @@ class OptionScene: Scene{
                         l.add( ev.toString,{
                             if(Dungeon.now is null){return;}
                             
-                            DungeonEvent.ins.set( ev.happen );
+                            ev.happen();
                         },{
 
                         });

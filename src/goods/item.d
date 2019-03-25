@@ -9,8 +9,8 @@ import goods.goods;
 abstract class Item: IGoods{
     mixin MGoods;
     mixin Values!ItemValues;
+    mixin Shop;
 
-    enum NO_SELL = 0;
 
     enum Type{
         蘇生,
@@ -152,8 +152,6 @@ abstract class Item: IGoods{
         this.rank = rank;
         this.box = box;
     }
-
-    int getPrice(){return NO_SELL;}
 
     Composition getComposition(){return Composition.empty;}
 
@@ -445,6 +443,26 @@ private class ItemValues{
     static Item  ピートモス(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("土"
             ,Type.素材, /*rank*/1, /*box*/true);}
+    });}
+    @Value
+    static Item  セメント(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super(""
+            ,Type.素材, /*rank*/2, /*box*/true);}
+    });}
+    @Value
+    static Item  コンクリート(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super(""
+            ,Type.素材, /*rank*/2, /*box*/true);}
+    });}
+    @Value
+    static Item  モルタル(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super(""
+            ,Type.素材, /*rank*/2, /*box*/true);}
+    });}
+    @Value
+    static Item  少女の心を持ったおっさん(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("いつもプリキュアの話をしている"
+            ,Type.素材, /*rank*/6, /*box*/true);}
     });}
     //-------------------------------------------------------------
     //

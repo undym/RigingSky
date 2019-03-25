@@ -17,7 +17,7 @@ class DungeonScene: AbstScene{
         Util.msg.set( format!"[%s]に侵入した..."(Dungeon.now) );
         drawDungeonName( Dungeon.now.toString, Bounds.toPixelRect( Bounds.Ratio.MAIN ).center );
 
-        DungeonEvent.ins.reset;
+        Event.now = Event.empty;
 
         setup;
         super.start;
@@ -84,7 +84,7 @@ private ILayout createBtn(){
 class DungeonEvent: InnerLayout{
     mixin ins;
 
-    Event ev;
+    Event before_ev;
     Anime anime;
     int anime_size_count;
 
@@ -93,11 +93,20 @@ class DungeonEvent: InnerLayout{
         add((bounds){
             if(!bounds.contains( Mouse.point )){return;}
 
-                 if(Mouse.left  == 1){set( ev.leftClick() );}
-            else if(Mouse.right == 1){set( ev.rightClick() );}
+                 if(Mouse.left  == 1){Event.now.leftClick();}
+            else if(Mouse.right == 1){Event.now.rightClick();}
         });
 
         add((g,bounds){
+            if(before_ev != Event.now){
+                before_ev = Event.now;
+
+                anime = Event.now.getAnime;
+                if(Event.now.isResetZoom){
+                    anime_size_count = 0;
+                }
+            }
+
             anime_size_count++;
             const float size_mul = 1.0 - 1.0 / anime_size_count;
             const float w_ratio = cast(float)bounds.w / anime.w;
@@ -112,20 +121,12 @@ class DungeonEvent: InnerLayout{
         });
     }
 
-    void reset(){
-        ev = Event.empty;
-        anime = Anime.empty;
-        anime_size_count = 0;
-    }
+    // void reset(){
+    //     ev = Event.empty;
+    //     anime = Anime.empty;
+    //     anime_size_count = 0;
+    // }
 
-    void set(Event ev){
-        this.ev = ev;
-
-        anime = ev.getAnime;
-        if(ev.isResetZoom){
-            anime_size_count = 0;
-        }
-    }
 }
 
 

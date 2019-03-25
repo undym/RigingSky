@@ -5,6 +5,7 @@ public import tec;
 
 interface IForce{
     void battleStart(Unit);
+    void battleEnd(Unit);
     void phaseStart(Unit);
     void phaseEnd(Unit);
     void beforeDoAtk(Tec, Unit attacker, Unit target, Dmg);
@@ -12,12 +13,13 @@ interface IForce{
     void afterDoAtk(Tec, Unit attacker, Unit target, Dmg);
     void afterBeAtk(Tec, Unit attacker, Unit target, Dmg);
     void equip(Unit);
-    void walk(Unit,WalkMng);
+    void walk(Unit, int* add_au);
 }
 
 
 template MForce(){
     override void battleStart(Unit){}
+    override void battleEnd(Unit){}
     override void phaseStart(Unit){}
     override void phaseEnd(Unit){}
     override void beforeDoAtk(Tec,Unit,Unit,Dmg){}
@@ -25,22 +27,8 @@ template MForce(){
     override void afterDoAtk(Tec,Unit,Unit,Dmg){}
     override void afterBeAtk(Tec,Unit,Unit,Dmg){}
     override void equip(Unit){}
-    override void walk(Unit,WalkMng){}
+    override void walk(Unit,int*){}
 }
-
-
-class WalkMng{
-    int add_au;
-    private bool is_advance;
-
-    void set(int add_au, bool is_advance){
-        this.add_au = add_au;
-        this.is_advance = is_advance;
-    }
-
-    bool isAdvance(){return is_advance;}
-}
-
 
 class Dmg{
     
@@ -78,15 +66,12 @@ class Dmg{
     }
 
     double calc(){
-        import std.random: uniform;
-
-        double cut = calcCut(def);
-        result = pow * mul * cut;
-
-        if(uniform(0.0,1.0) < hit){
-            result_hit = true;
+        result_hit = uniform(0.0,1.0) <= hit;
+        if(result_hit){
+            import std.random: uniform;
+            double cut = calcCut(def);
+            result = pow * mul * cut * uniform!"[]";
         }else{
-            result_hit = false;
             result = 0;
         }
 

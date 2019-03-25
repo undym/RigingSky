@@ -191,12 +191,6 @@ class Save{
             rec.list("PlayData",(io){
                 import util;
                 io.io("yen", PlayData.yen);
-                io.io("eq_btn_visible",     PlayData.eq_btn_visible);
-                io.io("tec_btn_visible",    PlayData.tec_btn_visible);
-                io.io("item_btn_visible",   PlayData.item_btn_visible);
-                io.io("save_btn_visible",   PlayData.save_btn_visible);
-                io.io("job_btn_visible",    PlayData.job_btn_visible);
-                io.io("meisou_btn_visible", PlayData.meisou_btn_visible);
             });
         }
 }

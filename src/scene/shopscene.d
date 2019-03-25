@@ -6,6 +6,7 @@ import unit;
 import widget.btn;
 import widget.list;
 import goods.item;
+import eq.eqear;
 
 
 class ShopScene: AbstScene{
@@ -13,10 +14,12 @@ class ShopScene: AbstScene{
 
     private enum ShopType{
         ITEM,
+        EAR,
     }
     
     private List list;
     private Item info_item;
+    private EqEar info_ear;
     private ShopType shop_type;
 
     private this(){
@@ -57,16 +60,20 @@ class ShopScene: AbstScene{
             .add(new BorderLayout()
                 .add!("top",0.8)({
                     import widget.groupbtn;
+                    import goods.building;
                     GroupBtn gb = GroupBtn.ofY;
 
                     
                     void add(bool delegate() visible, string name, void delegate() push_action){
-                        if(visible()){
-                            gb.add( name, push_action );
-                        }else{
-                            import std.string: tr;
-                            gb.addDummy( name.tr(".","？","cd") );
-                        }
+                        import std.string: tr;
+                        gb.add( 
+                            ()=> visible() ? name : name.tr(".","？","cd")
+                            ,{
+                                if(!visible()){return;}
+                                push_action();
+                            }
+                        )
+                        .set!"string"(()=> visible() ? Color.WHITE : Color.GRAY);
                     }
 
                     gb.add("道具屋",{
@@ -75,8 +82,14 @@ class ShopScene: AbstScene{
                         setItemList();
                     });
 
-                    add(()=>false, "耳屋",{
-                    });
+                    add(()=> Building.耳屋.getComposition().exp > 0
+                        ,"耳屋"
+                        ,{
+                            shop_type = ShopType.EAR;
+                            list.clear;
+                            setEarList();
+                        }
+                    );
                     gb.push(0);
                     return gb;
                 }())
@@ -91,6 +104,7 @@ class ShopScene: AbstScene{
             .add!("center",0.55)(list)
             .add!("right",0.45)(new VariableLayout({
                 static Labels item;
+                static Labels ear;
                 static PackedYLayout l;
                 if(item is null){
                     item = new Labels(Util.font)
@@ -102,16 +116,18 @@ class ShopScene: AbstScene{
                             .br()
                             .addln(()=> info_item.getInfo())
                             ;
+                    ear = new Labels(Util.font)
+                            .add!"top"(()=> format!"[%s]"(info_ear))
+                            .add(()=> format!"所持:%s個"( info_ear.num ))
+                            .add(()=> format!"値段:%s円"( info_ear.getPrice() ), ()=> info_ear.getPrice() <= PlayData.yen ? Color.YELLOW : Color.RED)
+                            .br()
+                            .add(()=> info_ear.getInfo() )
+                            ;
                 }
-                // if(info != info_bak){
-                //     info_bak = info;
-                //     l = new PackedYLayout( Util.FONT_SIZE );
-                //     l.add( (new Label(Util.font, format!"[%s]"(info.toString) )).setDrawPoint!"top" );
-
-                // }
+                
                 if(shop_type == ShopType.ITEM && info_item !is null){return item;}
+                if(shop_type == ShopType.EAR  && info_ear !is null) {return ear;}
                 return ILayout.empty;
-                // return info is null ? ILayout.empty : l;
             }))
         );
 
@@ -124,12 +140,10 @@ class ShopScene: AbstScene{
     }
 
     private void setItemList(){
-        list.clear;
-
         list.separater("アイテム");
         
         Item.values
-            .filter!(item=> item.getPrice() != Item.NO_SELL)
+            .filter!(item=> item.getPrice() != Item.NOT_FOR_SALE)
             .each!((item){
                 list.add(()=> item.toString(), ()=> format!"%s"(item.num),{
                     if(PlayData.yen >= item.getPrice()){
@@ -139,6 +153,25 @@ class ShopScene: AbstScene{
                     }
                 },{
                     info_item = item;
+                });
+            });
+    }
+
+    private void setEarList(){
+        import eq.eqear;
+        list.separater("耳");
+
+        EqEar.values()
+            .filter!(ear=> ear.getPrice() != EqEar.NOT_FOR_SALE)
+            .each!((ear){
+                list.add(()=> ear.toString(), ()=> format!"%s"(ear.num),{
+                    if(PlayData.yen >= ear.getPrice()){
+                        PlayData.yen -= ear.getPrice();
+
+                        ear.add(1);
+                    }
+                },{
+                    info_ear = ear;
                 });
             });
     }

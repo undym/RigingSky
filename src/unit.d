@@ -204,12 +204,13 @@ abstract class Unit{
         }
         force(f=> f.battleStart(this));
     }
-    void forcePhaseStart(){force(f=> f.phaseStart(this));}
-    void forcePhaseEnd(){force(f=> f.phaseEnd(this));}
-    void forceBeforeDoAtk(Tec tec, Unit target, Dmg dmg)     {force(f=> f.beforeDoAtk(tec, this, target, dmg));}
-    void forceBeforeBeAtk(Tec tec, Unit attacker, Dmg dmg)   {force(f=> f.beforeBeAtk(tec, attacker, this, dmg));}
-    void forceAfterDoAtk(Tec tec, Unit target, Dmg dmg)      {force(f=> f.afterDoAtk(tec, this, target, dmg));}
-    void forceAfterBeAtk(Tec tec, Unit attacker, Dmg dmg)    {force(f=> f.afterBeAtk(tec, attacker, this, dmg));}
+    void forcePhaseStart()                                  {force(f=> f.phaseStart(this));}
+    void forcePhaseEnd()                                    {force(f=> f.phaseEnd(this));}
+    void forceBeforeDoAtk(Tec tec, Unit target, Dmg dmg)    {force(f=> f.beforeDoAtk(tec, this, target, dmg));}
+    void forceBeforeBeAtk(Tec tec, Unit attacker, Dmg dmg)  {force(f=> f.beforeBeAtk(tec, attacker, this, dmg));}
+    void forceAfterDoAtk(Tec tec, Unit target, Dmg dmg)     {force(f=> f.afterDoAtk(tec, this, target, dmg));}
+    void forceAfterBeAtk(Tec tec, Unit attacker, Dmg dmg)   {force(f=> f.afterBeAtk(tec, attacker, this, dmg));}
+    void forceBattleEnd()                                   {force(f=> f.battleEnd(this));}
     void forceEquip() {
         import std.traits: EnumMembers;
         foreach(prm; [EnumMembers!Prm]){
@@ -218,8 +219,8 @@ abstract class Unit{
         force(f=> f.equip(this));
         
     }
-    void forceWalk(WalkMng walk_mng){
-        force(f=> f.walk(this, walk_mng));
+    void forceWalk(int* add_au){
+        force(f=> f.walk(this, add_au));
     }
 
     protected void force(void delegate(IForce) dlgt){
@@ -306,12 +307,8 @@ class PUnit: Unit{
             Util.msg.set(format!"%sのLvが%.0fになった！"( name, prm!"LV".total ), cnt=> Color.YELLOW.bright(cnt)); cwait;
 
             double add_bp = 1;
-            Util.msg.set(format!"BP+%.0f"( add_bp ), cnt=> Color.YELLOW.bright(cnt)); cwait;
-            
-            if(!PlayData.meisou_btn_visible){
-                PlayData.meisou_btn_visible = true;
-                Util.msg.set("瞑想が可能になった", cnt=> Color.ORANGE.bright(cnt));
-            }
+            bp += add_bp;
+            Util.msg.set(format!"BP+%.0f"( add_bp ), cnt=> Color.GREEN.bright(cnt)); cwait;
 
             {
                 double add_hp = 1;
@@ -345,11 +342,6 @@ class PUnit: Unit{
                     return;
                 }
             }
-            //技欄に空きがなくなった時、技のセットのボタンが出現
-            if(!PlayData.tec_btn_visible){
-                PlayData.tec_btn_visible = true;
-                Util.msg.set("技のセットが可能になった", cnt=> Color.ORANGE.bright(cnt));
-            }
         }
         if(job_lvs[job] >= Job.MAX_LV){return;}
 
@@ -363,11 +355,6 @@ class PUnit: Unit{
             if(*lv >= Job.MAX_LV){
                 *lv = Job.MAX_LV;
                 Util.msg.set(format!"%sの%sLvが最大になった！"( name, job ), cnt=> Color.CYAN.bright(cnt)); cwait;
-
-                if(!PlayData.job_btn_visible){
-                    PlayData.job_btn_visible = true;
-                    Util.msg.set("転職が可能になった", cnt=> Color.ORANGE.bright(cnt));
-                }
             }else{
                 Util.msg.set(format!"%sの%sLvが%sになった"( name, job, *lv ), cnt=> Color.CYAN.bright(cnt)); cwait;
             }

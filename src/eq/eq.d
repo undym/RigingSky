@@ -88,12 +88,12 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    髪(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 髪(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.頭, /*lv*/0);}
     });}
     @Value
-    static Eq    クロワッサン(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq クロワッサン(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("最大HP+50"
             ,Pos.頭, /*lv*/50);}
         override Composition getComposition(){static Composition com; return com !is null ? com : (com = new class Composition{
@@ -119,13 +119,12 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    棒(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 棒(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.剣, /*lv*/0);}
     });}
-    //はじまりの丘・財宝
-    @Value
-    static Eq    良い棒(){static Eq res; return res !is null ? res : (res = new class Eq{
+    @Value //はじまりの丘・財宝
+    static Eq 良い棒(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("全ステータス+10"
             ,Pos.剣, /*lv*/20);}
         override void equip(Unit u){
@@ -142,13 +141,12 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    親指(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 親指(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.盾, /*lv*/0);}
     });}
-    //はじまりの丘・EX
-    @Value
-    static Eq    盾の盾(){static Eq res; return res !is null ? res : (res = new class Eq{
+    @Value //はじまりの丘・EX
+    static Eq 盾の盾(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("戦闘開始時＜盾＞化"
             ,Pos.盾, /*lv*/30);}
         override void battleStart(Unit u){
@@ -163,13 +161,12 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    襤褸切れ(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 襤褸切れ(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.体, /*lv*/0);}
     });}
-    //見知らぬ海岸・財宝
-    @Value
-    static Eq    布(){static Eq res; return res !is null ? res : (res = new class Eq{
+    @Value //見知らぬ海岸・財宝
+    static Eq 布(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("最大HP+50"
             ,Pos.体, /*lv*/30);}
         override void equip(Unit u){
@@ -177,7 +174,7 @@ private class EqValues{
         }
     });}
     @Value
-    static Eq    毛皮(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 毛皮(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("最大HP+10%"
             ,Pos.体, /*lv*/30);}
         override void equip(Unit u){
@@ -190,12 +187,23 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    ひも(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq ひも(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.腰, /*lv*/0);}
     });}
+    @Value //はじまりの丘　クリア
+    static Eq おめでとうのひも(){static Eq res; return res !is null ? res : (res = new class Eq{
+        this(){super("戦闘開始時最大HP・現在HP+10%"
+            ,Pos.腰, /*lv*/40);}
+        override void battleStart(Unit u){
+            double value = u.prm!"MAX_HP".base / 10;
+            u.prm!"MAX_HP".battle += value;
+            u.hp += value;
+            u.fixPrm;
+        }
+    });}
     @Value
-    static Eq    黒帯(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 黒帯(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("格闘を受けた時、格闘攻撃で反撃する"
             ,Pos.腰, /*lv*/80);}
         override void afterBeAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
@@ -212,13 +220,12 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    リスト(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq リスト(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.腕, /*lv*/0);}
     });}
-    //見知らぬ海岸・EX
-    @Value
-    static Eq    魔ヶ玉の手首飾り(){static Eq res; return res !is null ? res : (res = new class Eq{
+    @Value //見知らぬ海岸・EX
+    static Eq 魔ヶ玉の手首飾り(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("毎ターンMP+10"
             ,Pos.腕, /*lv*/10);}
     });}
@@ -228,9 +235,17 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    肩身の指輪(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 肩身の指輪(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.指, /*lv*/0);}
+    });}
+    @Value //見知らぬ海岸　クリア
+    static Eq ドリー(){static Eq res; return res !is null ? res : (res = new class Eq{
+        this(){super("魔+10"
+            ,Pos.指, /*lv*/30);}
+        override void equip(Unit u){
+            u.prm!"MAG".eq += 10;
+        }
     });}
     //------------------------------------------------------------------
     //
@@ -238,17 +253,17 @@ private class EqValues{
     //
     //------------------------------------------------------------------
     @Value
-    static Eq    靴(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq 靴(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super(""
             ,Pos.脚, /*lv*/0);}
     });}
     @Value
-    static Eq    ルクシオンの尾(){static Eq res; return res !is null ? res : (res = new class Eq{
+    static Eq ルクシオンの尾(){static Eq res; return res !is null ? res : (res = new class Eq{
         this(){super("進む時、HP+1%"
             ,Pos.脚, /*lv*/0);}
-        override void walk(Unit u, WalkMng walk_mng){
+        override void walk(Unit u, int* add_au){
             if(u.dead){return;}
-            if(walk_mng.isAdvance){
+            if(*add_au > 0){
                 u.hp += u.prm!"MAX_HP".total / 100 + 1;
                 u.fixPrm;
             }

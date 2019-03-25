@@ -420,6 +420,11 @@ class BattleScene: AbstScene{
         result = Result.WIN;
         Util.msg.set("勝った", cnt=> Color.CYAN.bright(cnt)); cwait;
 
+        foreach(p; Unit.players){
+            if(!p.exists){continue;}
+
+            p.forceBattleEnd();
+        }
         {//exp
             double exp = 0;
 

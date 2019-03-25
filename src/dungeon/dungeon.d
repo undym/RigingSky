@@ -34,6 +34,22 @@ abstract class Dungeon{
     private int rank;
     int getRank(){return rank;}
 
+    private double enemy_lv;
+    double getEnemyLv(){return enemy_lv;}
+    //プレイヤー依存Lv
+    // override double getEnemyLv(){
+    //     double total_lv = 0;
+    //     int num;
+    //     foreach(p; Unit.players){
+    //         if(!p.exists || p.dead){continue;}
+
+    //         total_lv += p.prm!"LV".total;
+    //         num++;
+    //     }
+    //     if(num == 0){return 0;}
+    //     return total_lv / num;
+    // }
+
     private int au;
     int getAU(){return au;}
     const FRect btn_bounds;
@@ -42,9 +58,10 @@ abstract class Dungeon{
     int killed_ex_num;
     int opened_tresure_num;
 
-    private this(Area area, int rank, int au, FRect btn_bounds){
+    private this(Area area, int rank, double enemy_lv, int au, FRect btn_bounds){
         this.area = area;
         this.rank = rank;
+        this.enemy_lv = enemy_lv;
         this.au = au;
         this.btn_bounds = btn_bounds;
     }
@@ -52,6 +69,7 @@ abstract class Dungeon{
     bool isVisible();
     IGoods getTresureKey();
     Tresure[] getTresures();
+    IGoods[] getFirstClearRewards();
     IGoods[] getTrendItems();
     protected void setBossInner();
     protected void setExInner();
@@ -95,26 +113,13 @@ abstract class Dungeon{
         int enemy_num = uniform(1, 2 + getRank);
         enemy_num = enemy_num <= Unit.ENEMY_NUM ? enemy_num : Unit.ENEMY_NUM;
         
-        setEnemy( enemy_num );
+        setEnemy( enemy_num, this.getEnemyLv() );
     }
 
-    void setEnemy(int enemy_num){
-        double average_lv = {
-            double total_lv = 0;
-            int num;
-            foreach(p; Unit.players){
-                if(!p.exists || p.dead){continue;}
-
-                total_lv += p.prm!"LV".total;
-                num++;
-            }
-            if(num == 0){return 0;}
-            return total_lv / num;
-        }();
-
-
+    void setEnemy(int enemy_num, double base_lv){
         foreach(i; 0..enemy_num){
-            double lv = uniform!"[]"( average_lv * 0.75, average_lv * 1.25 );
+            import std.math: floor;
+            double lv = uniform!"[]"( base_lv * 0.75, base_lv * 1.25 ).floor;
             Job job = Job.rndJob( lv );
             job.setEnemy( Unit.enemies[i], lv );
             
@@ -126,7 +131,7 @@ abstract class Dungeon{
     }
     
     void setBoss(){
-        setEnemy( Unit.ENEMY_NUM );
+        setEnemy( Unit.ENEMY_NUM, this.getEnemyLv() );
 
         foreach(e; Unit.enemies){
             e.prm!"MAX_HP".base *= 10;
@@ -144,7 +149,7 @@ abstract class Dungeon{
     }
 
     void setEx(){
-        setEnemy( Unit.ENEMY_NUM );
+        setEnemy( Unit.ENEMY_NUM, this.getEnemyLv() );
 
         foreach(e; Unit.enemies){
             e.prm!"MAX_HP".base *= 10;
@@ -170,18 +175,20 @@ private class DungeonValues{
     //-----------------------------------------------------
     @Value
     static Dungeon はじまりの丘(){static Dungeon res; return res !is null ? res : (res = new class Dungeon{
-        this(){super(Area.再構成トンネル, /*rank*/0, /*au*/50, FRect(0.35, 0.45, 0.3, 0.1));}
-        override bool isVisible()        {return true;}
-        override IGoods getTresureKey()  {return Item.はじまりの丘の財宝の鍵;}
-        override Tresure[] getTresures() {return [Tresure(Eq.良い棒, 1)];}
-        override IGoods[] getTrendItems(){return [Item.草, Item.枝, Item.石, Item.泥];}
+        this(){super(Area.再構成トンネル, /*rank*/0, /*lv*/1, /*au*/50, FRect(0.35, 0.45, 0.3, 0.1));}
+        override bool isVisible()                {return true;}
+        override IGoods getTresureKey()          {return Item.はじまりの丘の財宝の鍵;}
+        override Tresure[] getTresures()         {return [Tresure(Eq.良い棒, 1)];}
+        override IGoods[] getFirstClearRewards() {return [Eq.おめでとうのひも];}
+        override IGoods[] getTrendItems()        {return [Item.草, Item.枝, Item.石, Item.泥];}
         override void setBossInner(){
             foreach(e; Unit.enemies){
                 e.prm!"MAX_HP".base = 20;
             }
+            Unit.enemies[$-1].exists = false;
 
             EUnit e = Unit.enemies[0];
-            Job.しんまい.setEnemy(e, /*lv*/2);
+            Job.しんまい.setEnemy(e, /*lv*/e.prm!"LV".total);
             e.name = "ボス";
             e.prm!"MAX_HP".base = 40;
         }
@@ -191,7 +198,7 @@ private class DungeonValues{
             }
 
             EUnit e = Unit.enemies[0];
-            Job.魔法使い.setEnemy(e, /*lv*/3);
+            Job.魔法使い.setEnemy(e, /*lv*/e.prm!"LV".total);
             e.name = "EX";
             e.prm!"MAX_HP".base = 80;
             e.setDropItem( Eq.盾の盾 );
@@ -204,11 +211,12 @@ private class DungeonValues{
     });}
     @Value
     static Dungeon 見知らぬ海岸(){static Dungeon res; return res !is null ? res : (res = new class Dungeon{
-        this(){super(Area.再構成トンネル, /*rank*/1, /*au*/100, FRect(0.7, 0.1, 0.3, 0.1));}
-        override bool isVisible()        {return Dungeon.はじまりの丘.clear_num > 0;}
-        override IGoods getTresureKey()  {return Item.見知らぬ海岸の財宝の鍵;}
-        override Tresure[] getTresures() {return [Tresure(Eq.布, 1)];}
-        override IGoods[] getTrendItems(){return [Item.ピートモス, Item.腐葉土];}
+        this(){super(Area.再構成トンネル, /*rank*/1, /*lv*/1, /*au*/100, FRect(0.7, 0.1, 0.3, 0.1));}
+        override bool isVisible()                {return Dungeon.はじまりの丘.clear_num > 0;}
+        override IGoods getTresureKey()          {return Item.見知らぬ海岸の財宝の鍵;}
+        override Tresure[] getTresures()         {return [Tresure(Eq.布, 1)];}
+        override IGoods[] getFirstClearRewards() {return [Eq.ドリー];}
+        override IGoods[] getTrendItems()        {return [Item.ピートモス, Item.腐葉土];}
         override void setBossInner(){
             foreach(e; Unit.enemies){
                 e.prm!"MAX_HP".base = 30;

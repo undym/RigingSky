@@ -36,8 +36,9 @@ class FieldScene: AbstScene{
             Labels labels = new Labels(Util.font)
                                 .setOutsideMargin(2,2,2,2)
                                 .add(()=> format!"[%s]"( info_dungeon ))
-                                .add(()=> format!"Rank:%s"( info_dungeon.getRank ))
-                                .add(()=> format!"AU:%s"( info_dungeon.getAU ))
+                                .add(()=> format!"Rank:%s"( info_dungeon.getRank() ))
+                                .add(()=> format!"Lv:%.0f"( info_dungeon.getEnemyLv() ))
+                                .add(()=> format!"AU:%s"( info_dungeon.getAU() ))
                                 .add(()=> format!"攻略回数:%s"( info_dungeon.clear_num ))
                                 .add(()=> format!"財宝入手:%s"( info_dungeon.opened_tresure_num ))
                                 .add(()=> format!"EX撃破数:%s"( info_dungeon.killed_ex_num ))
@@ -76,22 +77,23 @@ private ILayout createBtn(){
             bool delegate() visible = ()=> visible_dlgt() || Test.appear_all_btn;
 
             import std.string: tr;
-            box.add(
-                new Btn(
-                     ()=> visible() ? name : name.tr(".","？","cd")
-                    ,{
-                        if(!visible()){return;}
-                        push();
-                    },{
-                        if(!visible()){return;}
-                        cursor_on(); 
-                    }
-                )
-            );
+            if(visible()){
+                box.add(
+                    new Btn(
+                         name
+                        ,push
+                        ,cursor_on
+                    )
+                );
+            }else{
+                auto btn = new Btn( name.tr(".","？","cd"),{},{});
+                btn.set!"string"(Color.GRAY);
+                box.add(btn);
+            }
         }
 
         addBtn(
-            ()=> PlayData.tec_btn_visible
+            ()=> Building.技能認定所.getComposition().exp > 0
             ,"技のセット",{
                 import scene.settecscene;
                 SetTecScene.ins.start;
@@ -111,7 +113,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> Building.着付け教室.getComposition().exp > 0
+            ()=> Building.更衣室.getComposition().exp > 0
             ,"装備",{
                 import scene.eqscene;
                 EqScene.ins.start;
@@ -121,7 +123,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> Building.瞑想屋.getComposition().exp > 0
+            ()=> Building.瞑想場.getComposition().exp > 0
             ,"瞑想",{
                 import scene.meisouscene;
                 MeisouScene.ins.start;
@@ -161,7 +163,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> PlayData.save_btn_visible
+            ()=> true
             ,"セーブ",{
                 import save;
                 Save.save();
@@ -199,6 +201,7 @@ private ILayout createMain(){
 
                     Dungeon.escape = false;
                     Dungeon.now = d;
+                    Dungeon.now_au = 0;
                     DungeonScene.ins.start;
 
                     FieldScene.ins.setup();
