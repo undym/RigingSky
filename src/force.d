@@ -1,6 +1,6 @@
 module force;
 
-import unit;
+public import unit;
 public import tec;
 
 interface IForce{
@@ -66,11 +66,13 @@ class Dmg{
     }
 
     double calc(){
+        import std.random: uniform;
+        
         result_hit = uniform(0.0,1.0) <= hit;
         if(result_hit){
             import std.random: uniform;
             double cut = calcCut(def);
-            result = pow * mul * cut * uniform!"[]";
+            result = pow * mul * cut * uniform!"[]"(0.75, 1.25);
         }else{
             result = 0;
         }

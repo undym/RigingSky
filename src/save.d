@@ -45,8 +45,12 @@ class Save{
             import std.conv;
             import std.traits: EnumMembers;
             
-            string savedata_version = Util.game_version;
-            rec.io("version", savedata_version);
+            int savedata_version_major = Util.GameVersion.major;
+            int savedata_version_minor = Util.GameVersion.minor;
+            int savedata_version_mente = Util.GameVersion.mente;
+            rec.io("version_major", savedata_version_major);
+            rec.io("version_minor", savedata_version_minor);
+            rec.io("version_mente", savedata_version_mente);
 
             rec.list("Dungeon",(io){
                 foreach(d; Dungeon.values){
@@ -171,7 +175,7 @@ class Save{
             });
 
             rec.list("Item",(io){
-                import goods.item;
+                import item;
                 foreach(_item; Item.values){
                     io.list(_item.getUniqueName(),(io_item){
                         io_item.io("num", _item.num);
@@ -182,7 +186,7 @@ class Save{
             });
             
             rec.list("Building",(io){
-                import goods.building;
+                import building;
                 foreach(b; Building.values){
                     io.io( b.getUniqueName(), b.getComposition().exp );
                 }

@@ -27,7 +27,10 @@ class TitleScene: Scene{
         Font small_font = Font.of(12);
         add(new YLayout()
             .add(new BorderLayout()
-                .add!("left")(new Label(small_font, "RigingSky").setDrawPoint!"upper_left")
+                .add!("left")(new PackedYLayout( small_font.size )
+                    .add(new Label(small_font, "RigingSky"))
+                    .add(new Label(small_font, "version:"~Util.GameVersion.toString()))
+                )
                 .add!("center")(ILayout.empty)
                 .add!("right")(new Label(small_font, "制作:UMente").setDrawPoint!"upper_right")
             )
@@ -61,7 +64,7 @@ class TitleScene: Scene{
             }
         }
 
-        import goods.item;
+        import item;
         Item.サンタクララ薬.num += 5;
         Item.スティックパン.num += 10;
         Item.蛍草.num += 10;

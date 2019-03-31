@@ -158,45 +158,6 @@ class Tec: IForce{
     }
 }
 
-/**
-    内部でtarget.doDmg(value)を呼び出す。
-    被攻撃時のTP増加処理のためこの関数を介する。
-*/
-private void doTecDmg(Unit target, double value){
-    target.doDmg( value );
-
-    target.tp += 5;
-    target.fixPrm;
-}
-
-
-private void heal(Unit target, double value){
-    if(target.dead){return;}
-
-    target.hp += value;
-    target.fixPrm;
-    
-    import effect: Effect;
-    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.GREEN );
-}
-
-
-private void revive(Unit target, double hp){
-    if(!target.dead){return;}
-
-    target.dead = false;
-    target.hp = hp;
-    target.fixPrm;
-
-    import effect: Effect;
-    Effect.flipStr( format!"%.0f"(hp), target.rndCenter, Color.GREEN );
-}
-
-
-private void selfHarm(Unit target, double value){
-    Util.msg.set("＞自傷", cnt=>Color.RED.bright(cnt));
-    target.doDmg(value);
-}
 
 private Dmg createTypeDmg(Tec.Type type, Unit attacker, Unit target){
     alias Type = Tec.Type;
@@ -237,7 +198,7 @@ private Dmg createTypeDmg(Tec.Type type, Unit attacker, Unit target){
             dmg.def = target.prm!"GUN".total;
             return dmg;
         case Type.回復:
-            dmg.pow = attacker.prm!"LIG".total;
+            dmg.pow = attacker.prm!"LIG".total / 2 + target.prm!"LIG".total / 2;
             return dmg;
         case Type.状態:
             return dmg;
@@ -245,6 +206,7 @@ private Dmg createTypeDmg(Tec.Type type, Unit attacker, Unit target){
             return dmg;
     }
 }
+
 
 private void typeEffect(Tec.Type type, Unit attacker, Unit target){
     alias Type = Tec.Type;
@@ -287,6 +249,32 @@ private void typeEffect(Tec.Type type, Unit attacker, Unit target){
 
 
 
+/**
+    内部でtarget.doDmg(value)を呼び出す。
+    被攻撃時のTP増加処理のためこの関数を介する。
+*/
+private void doTecDmg(Unit target, double value){
+    target.doDmg( value );
+
+    target.tp += 5;
+    target.fixPrm;
+}
+
+
+private void selfHarm(Unit target, double value){
+    Util.msg.set("＞自傷", cnt=>Color.RED.bright(cnt));
+    target.doDmg(value);
+}
+
+
+private void arrowCritical(Dmg dmg){
+    if(uniform(0.0,1.0) < 0.2){
+        dmg.mul *= 2;
+        Util.msg.set("＞クリティカル");
+    }
+}
+
+
 private class TecValues{
 
     //----------------------------------------------------------------
@@ -301,7 +289,7 @@ private class TecValues{
     });}
     //------------------------------------------------------------------
     //
-    //格闘
+    //格闘active
     //
     //------------------------------------------------------------------
     @Value
@@ -346,6 +334,10 @@ private class TecValues{
         }
     });}
     //------------------------------------------------------------------
+    //
+    //格闘passive
+    //
+    //------------------------------------------------------------------
     @Value
     static Tec 格闘攻撃UP(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("格闘攻撃+30%"
@@ -358,7 +350,7 @@ private class TecValues{
     });}
     //------------------------------------------------------------------
     //
-    //魔法
+    //魔法active
     //
     //------------------------------------------------------------------
     @Value
@@ -374,6 +366,10 @@ private class TecValues{
             ,/*mp*/20, /*tp*/0, /*num*/()=>1, /*mul*/1.5, /*hit*/1.0);}
     });}
     //------------------------------------------------------------------
+    //
+    //魔法passive
+    //
+    //------------------------------------------------------------------
     @Value
     static Tec 魔法攻撃UP(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("魔法攻撃+30%"
@@ -386,18 +382,23 @@ private class TecValues{
     });}
     //------------------------------------------------------------------
     //
-    //神格
+    //神格active
     //
     //------------------------------------------------------------------
     @Value
     static Tec 天籟(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("一体に神格攻撃"
             ,Type.神格, Targeting.SELECT
-            ,/*mp*/0, /*tp*/10, /*num*/()=>1, /*mul*/1.0, /*hit*/1.3);}
+            ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.3);}
     });}
     //------------------------------------------------------------------
     //
-    //暗黒
+    //神格passive
+    //
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
+    //
+    //暗黒active
     //
     //------------------------------------------------------------------
     @Value
@@ -425,7 +426,7 @@ private class TecValues{
             target.doDmg( value );
 
             Effect.回復( attacker.center );
-            heal( attacker, value );
+            healHP( attacker, value );
         }
     });}
     @Value
@@ -439,6 +440,11 @@ private class TecValues{
             Tec.吸血.runInner( attacker, target, dmg );
         }
     });}
+    //------------------------------------------------------------------
+    //
+    //暗黒passive
+    //
+    //------------------------------------------------------------------
     @Value
     static Tec 宵闇(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("暗黒攻撃x2"
@@ -451,18 +457,29 @@ private class TecValues{
     });}
     //------------------------------------------------------------------
     //
-    //練術
+    //練術active
     //
     //------------------------------------------------------------------
     @Value
     static Tec スネイク(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("敵全体に練術攻撃"
             ,Type.練術, Targeting.ALL
-            ,/*mp*/0, /*tp*/15, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
+            ,/*mp*/0, /*tp*/10, /*num*/()=>1, /*mul*/1.0, /*hit*/0.95);}
+    });}
+    @Value
+    static Tec ホワイトスネイク(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("一体に練術攻撃x2"
+            ,Type.練術, Targeting.RANDOM
+            ,/*mp*/0, /*tp*/20, /*num*/()=>1, /*mul*/2.0, /*hit*/0.95);}
     });}
     //------------------------------------------------------------------
     //
-    //過去
+    //練術passive
+    //
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
+    //
+    //過去active
     //
     //------------------------------------------------------------------
     @Value
@@ -479,7 +496,104 @@ private class TecValues{
     });}
     //------------------------------------------------------------------
     //
-    //回復
+    //過去passive
+    //
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
+    //
+    //銃術active
+    //
+    //------------------------------------------------------------------
+    @Value
+    static Tec 撃つ(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("一体に銃術攻撃"
+            ,Type.銃術, Targeting.SELECT
+            ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/0.85);}
+    });}
+    @Value
+    static Tec 二丁拳銃(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("ランダムに2～3回銃術攻撃"
+            ,Type.銃術, Targeting.RANDOM
+            ,/*mp*/0, /*tp*/20, /*num*/()=>uniform!"[]"(2,3), /*mul*/1.0, /*hit*/0.85);}
+    });}
+    @Value
+    static Tec あがらない雨(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("ランダムに4～6回銃術攻撃"
+            ,Type.銃術, Targeting.RANDOM
+            ,/*mp*/0, /*tp*/0, /*num*/()=>uniform!"[]"(4,6), /*mul*/1.0, /*hit*/0.85);
+            ep_cost = 1;
+        }
+    });}
+    //------------------------------------------------------------------
+    //
+    //銃術passive
+    //
+    //------------------------------------------------------------------
+    @Value
+    static Tec スコープ(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("銃術・弓矢攻撃命中率+8%"
+            ,Type.銃術);}
+        override void beforeDoAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
+            if(tec.isType!("銃術","弓術")){
+                dmg.hit += 0.08;
+            }
+        }
+    });}
+    //------------------------------------------------------------------
+    //
+    //弓術active
+    //
+    //------------------------------------------------------------------
+    @Value
+    static Tec インドラ(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("一体に弓術攻撃"
+            ,Type.弓術, Targeting.SELECT
+            ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.2, /*hit*/0.85);}
+        override void runInner(Unit attacker, Unit target, Dmg dmg){
+            arrowCritical(dmg);
+            super.runInner(attacker, target, dmg);
+        }
+    });}
+    @Value
+    static Tec 雷電の矢(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("一体に弓術攻撃x2"
+            ,Type.弓術, Targeting.SELECT
+            ,/*mp*/0, /*tp*/20, /*num*/()=>1, /*mul*/2.0, /*hit*/0.85);}
+        override void runInner(Unit attacker, Unit target, Dmg dmg){
+            arrowCritical(dmg);
+            super.runInner(attacker, target, dmg);
+        }
+    });}
+    @Value
+    static Tec アスラの矢(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("敵全体に弓術攻撃"
+            ,Type.弓術, Targeting.ALL
+            ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.2, /*hit*/0.85);
+            ep_cost = 1;
+        }
+        override void runInner(Unit attacker, Unit target, Dmg dmg){
+            arrowCritical(dmg);
+            super.runInner(attacker, target, dmg);
+        }
+    });}
+    //------------------------------------------------------------------
+    //
+    //弓術passive
+    //
+    //------------------------------------------------------------------
+    @Value
+    static Tec 一点集中(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("銃術・弓術攻撃+20%"
+            ,Type.弓術);}
+        override void beforeDoAtk(Tec tec, Unit attacker, Unit target, Dmg dmg){
+            if(tec.isType!("銃術","弓術")){
+                dmg.mul += 0.2;
+            }
+        }
+    });}
+    //------------------------------------------------------------------
+    //
+    //回復active
     //
     //------------------------------------------------------------------
     @Value
@@ -489,7 +603,7 @@ private class TecValues{
             ,/*mp*/10, /*tp*/0, /*num*/()=>1, /*mul*/2.0, /*hit*/2.0);}
         override void runInner(Unit attacker, Unit target, Dmg dmg){
             effect( attacker, target );
-            heal( target, dmg.calc );
+            healHP( target, dmg.calc );
         }
     });}
     @Value
@@ -499,34 +613,51 @@ private class TecValues{
             ,/*mp*/40, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/2.0);}
         override void runInner(Unit attacker, Unit target, Dmg dmg){
             effect( attacker, target );
-            heal( target, dmg.calc );
+            healHP( target, dmg.calc );
         }
     });}
     @Value
     static Tec ユグドラシル(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("味方全体を復活・全回復"
-            ,Type.回復, Targeting.ALL | Targeting.ONLY_FRIEND
+            ,Type.回復, Targeting.ALL | Targeting.ONLY_FRIEND | Targeting.WITH_DEAD
             ,/*mp*/40, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/2.0);}
         override void effect(Unit attacker, Unit target){
             Effect.復活( target.center.to!float );
         }
         override void runInner(Unit attacker, Unit target, Dmg dmg){
             effect( attacker, target );
-            revive( target, target.prm!"MAX_HP".total );
+            if(target.dead){
+                revive( target, target.prm!"MAX_HP".total );
+            }else{
+                healHP( target, target.prm!"MAX_HP".total );
+            }
         }
     });}
+    @Value
+    static Tec キス(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("対象のTP+10%"
+            ,Type.回復, Targeting.SELECT | Targeting.WITH_FRIEND
+            ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/2.0);}
+        override void runInner(Unit attacker, Unit target, Dmg dmg){
+            healTP( target, attacker.prm!"MAX_TP".total * 0.1 );
+        }
+    });}
+    //------------------------------------------------------------------
+    //
+    //回復passive
+    //
+    //------------------------------------------------------------------
     @Value
     static Tec HP自動回復(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("毎ターンHP+1%"
             ,Type.回復);}
         override void phaseStart(Unit u){
-            u.hp += u.prm!"MAX_HP".total / 100 + 1;
-            u.fixPrm;
+            healHP(u, u.prm!"MAX_HP".total / 100 + 1);
         }
     });}
     //------------------------------------------------------------------
     //
-    //状態
+    //状態active
     //
     //------------------------------------------------------------------
     @Value
@@ -540,9 +671,46 @@ private class TecValues{
             Util.msg.set( format!"%sは＜練%s＞になった"( target.name, target.getConditionValue(Condition.練.type ) ) ); cwait;
         }
     });}
+    @Value
+    static Tec アンドロメダ(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("味方全員を＜盾2＞化"
+            ,Type.状態, Targeting.ONLY_FRIEND | Targeting.ALL
+            ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);
+            ep_cost = 1;
+        }
+        override void run(Unit attacker, Unit target){
+            target.addCondition( Condition.盾, 2 );
+        }
+    });}
+    @Value
+    static Tec 罪(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("一体を＜攻↓＞化"
+            ,Type.状態, Targeting.SELECT
+            ,/*mp*/20, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);}
+        override void run(Unit attacker, Unit target){
+            target.addCondition( Condition.攻撃低下, 2 );
+        }
+    });}
+    @Value
+    static Tec おやすみクステフ(){static Tec res; return res !is null ? res : (res = new class Tec{
+        this(){super("敵全体を＜眠1＞化"
+            ,Type.状態, Targeting.ALL
+            ,/*mp*/0, /*tp*/0, /*num*/()=>1, /*mul*/1.0, /*hit*/1.0);
+            ep_cost = 1;
+        }
+        override void run(Unit attacker, Unit target){
+            target.addCondition( Condition.眠, 1 );
+        }
+        override string toString(){return "おやすみ、C・STEF";}
+    });}
     //------------------------------------------------------------------
     //
-    //その他
+    //状態passive
+    //
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
+    //
+    //その他active
     //
     //------------------------------------------------------------------
     @Value
@@ -555,6 +723,10 @@ private class TecValues{
         }
     });}
     //------------------------------------------------------------------
+    //
+    //その他passive
+    //
+    //------------------------------------------------------------------
     @Value
     static Tec 体力回路(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("戦闘開始時、最大HP・現在HP+10%"
@@ -566,7 +738,6 @@ private class TecValues{
             u.fixPrm;
         }
     });}
-    //------------------------------------------------------------------
     @Value
     static Tec 魔力回路(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("戦闘開始時、最大MP・現在MP+10%"
@@ -578,7 +749,6 @@ private class TecValues{
             u.fixPrm;
         }
     });}
-    //------------------------------------------------------------------
     @Value
     static Tec 戦術回路(){static Tec res; return res !is null ? res : (res = new class Tec{
         this(){super("戦闘開始時、最大TP・現在TP+10%"

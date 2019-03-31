@@ -26,11 +26,13 @@ abstract class AbstScene: Scene{
 
     override void cwait(){
         int count;
-        wait(()=> 
-               Mouse.left == 1
-            || (Mouse.left  > 0 && ++count % 4 == 0)
-            || (Mouse.right > 0 && ++count % 4 == 0)
-        );
+        wait({
+            count++;
+            return     Mouse.left == 1
+                    || (Mouse.left  > 0 && count % 4 == 0)
+                    || (Mouse.right > 0 && count % 4 == 0)
+                    ;
+        });
     }
 
     protected void addEsc(){
@@ -56,9 +58,6 @@ class DrawBottom: InnerLayout{
             .add(ILayout.empty)
             .add(ILayout.empty)
             .add(new YLayout()
-                .add(ILayout.empty)
-                .add(ILayout.empty)
-                .add(ILayout.empty)
                 .add(ILayout.empty)
                 .add( (new Label(Util.font, ()=>format!"%s円"(PlayData.yen))).setDrawPoint!"right".set(Color.YELLOW) )
             )
@@ -157,10 +156,10 @@ class DrawStatusBox: InnerLayout{
                                     ,Util.font
                                 )
                             )
-                           .add(new Label(Util.font,{
-                               if(get_unit().ep > 0){return "EP";}
-                               return "";
-                            }, Color.CYAN))
+                           .add(new Label(Util.font,"EP",{
+                               if(get_unit().ep > 0){return Color.WHITE;}
+                               return Color.GRAY;
+                           }))
                            .add(new Label(Util.font,{
                                 alias Type = Condition.Type;
                                 return createConditionStr( [Type.GOOD_LV1, Type.GOOD_LV2, Type.GOOD_LV3] );
@@ -424,9 +423,9 @@ class DrawUpperRight: InnerLayout{
     mixin ins;
 
     private this(){
+        
         add(new FrameLayout()
             .add(new YLayout()
-                .add(ILayout.empty)
                 .add(ILayout.empty)
                 .add(ILayout.empty)
                 .add(ILayout.empty)

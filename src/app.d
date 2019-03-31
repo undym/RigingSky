@@ -2,9 +2,13 @@ module app;
 
 import undym;
 
-
 void main() {
+    import std.file;
+    import util;
+    write("dat/version.txt", Util.GameVersion.toString());
+
     init();
+
     
     import scene.titlescene;
     TitleScene.ins.start;

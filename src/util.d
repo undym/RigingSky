@@ -17,13 +17,26 @@ class Util {
         Font font;
         MoveMsg msg;
         int list_draw_elm_num = 20;
-        string game_version = "1";
+        struct GameVersion{
+            @disable this();
+            static:
+                const int major = 1;
+                const int minor = 0;
+                const int mente = 0;
+
+                string toString(){
+                    import std.format: format;
+                    return format!"%s.%s.%s"(major, minor, mente);
+                }
+        }
         /***/
         void setup() {
             font = Font.of(FONT_SIZE);
             msg = new MoveMsg(font,/*log*/30);
         }
 }
+
+
 
 
 class PlayData{
@@ -78,7 +91,7 @@ class Bounds{
         private this(){}
 
         private enum BOX = FSize( 0.5, 0.225 );
-        private enum BOTTOM_H = 0.1;
+        private enum BOTTOM_H = 0.05;
         enum PIXEL = FSize(1.0 / (WINDOW.w - 1), 1.0 / (WINDOW.h - 1));
         enum BOTTOM = FRect( 
                          PIXEL.w

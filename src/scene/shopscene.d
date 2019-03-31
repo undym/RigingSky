@@ -5,7 +5,7 @@ import scene.abstscene;
 import unit;
 import widget.btn;
 import widget.list;
-import goods.item;
+import item;
 import eq.eqear;
 
 
@@ -60,7 +60,7 @@ class ShopScene: AbstScene{
             .add(new BorderLayout()
                 .add!("top",0.8)({
                     import widget.groupbtn;
-                    import goods.building;
+                    import building;
                     GroupBtn gb = GroupBtn.ofY;
 
                     

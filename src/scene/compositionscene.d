@@ -4,7 +4,7 @@ import laziness;
 import scene.abstscene;
 import widget.btn;
 import widget.list;
-import goods.goods;
+import goods;
 
 class CompositionScene: AbstScene{
     mixin ins;
@@ -102,10 +102,11 @@ class CompositionScene: AbstScene{
 
 }
 
+
 private class BuildingList: InnerLayout{
     mixin ins;
 
-    import goods.building;
+    import building;
 
     Building info;
     List list;
@@ -120,18 +121,6 @@ private class BuildingList: InnerLayout{
                 static Building info_bak;
                 if(l is null){
                     l = new PackedYLayout( Util.font.size );
-                    // l.add(new Labels(Util.font)
-                    //     .add!"top"(()=> format!"[%s]"(info))
-                    //     .add({
-                    //         if(info.getComposition().getLimit() == Composition.LIMIT_INF){
-                    //             return format!"%s/-"( info.getComposition().exp );
-                    //         }else{
-                    //             return format!"%s/%s"( info.getComposition().exp, info.getComposition().getLimit() );
-                    //         }
-                    //     })
-                    //     .add(ILayout.empty)
-                    //     .addln(()=> info.getInfo())
-                    // );
                 }
                 if(info !is null && info != info_bak){
                     info_bak = info;
@@ -187,9 +176,10 @@ private class BuildingList: InnerLayout{
         list.separater("建築");
         
         Building.values()
-            .filter!(b=> b.getComposition().isVisible())
             .each!((b){
                 Composition com = b.getComposition();
+                if(!com.isVisible() || com.exp >= com.getLimit()){return;}
+
                 string delegate() exp = ()=> com.exp < com.getLimit() ? format!"%s"(com.exp) : "★";
                 list.add( ()=> b.toString(), exp, {
                     if(!com.canRun()){return;}
@@ -198,5 +188,10 @@ private class BuildingList: InnerLayout{
                     info = b;
                 });
             });
+        // Building.values()
+        //     .filter!(b=> b.getComposition().isVisible() && b.getComposition().exp < b.getComposition().getLimit())
+        //     .each!((b){
+        //         Composition com = b.getComposition();
+        //     });
     }
 }

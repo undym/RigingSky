@@ -1,4 +1,4 @@
-module condition;
+module condition.condition;
 
 import laziness;
 import force;
@@ -173,6 +173,11 @@ private class ConditionValues{
 
             u.addCondition(this, -1);
         }
+    });}
+    //このConditionはBattleSceneで効果を設定している.
+    @Value
+    static Condition 眠(){static Condition res; return res !is null ? res : (res = new class Condition{
+        this(){super("行動不能", Type.BAD_LV3, /*max*/4);}
     });}
     //------------------------------------------------------------------------
     //

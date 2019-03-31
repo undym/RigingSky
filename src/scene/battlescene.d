@@ -5,6 +5,7 @@ import scene.abstscene;
 import dungeon;
 import unit;
 import tec;
+import condition;
 
 class BattleScene: AbstScene{
     mixin ins;
@@ -246,6 +247,14 @@ class BattleScene: AbstScene{
         
         u.forcePhaseStart();
 
+        if(u.isCondition( Condition.眠 )){
+            Util.msg.set(format!"%sは眠っている..."(u.name)); cwait;
+
+            u.addCondition( Condition.眠, -1 );
+            turnEnd();
+            return;
+        }
+
         u.tp += 10;
         u.fixPrm;
         if(u.ep < 1){
@@ -364,9 +373,9 @@ class BattleScene: AbstScene{
                     YLayout box = new YLayout();
 
                     box.add(new Btn("アイテム",{
-                        import goods.item;
+                        import item;
                         import scene.itemscene;
-                        Item use_item = ItemSceneBattle.ins.startChoose(p);
+                        Item use_item = ItemScene.ins.startInBattle(p);
                         if(use_item is null){return;}
 
                         Util.msg.set(format!"[%s]を使用"( use_item ));
@@ -463,7 +472,7 @@ class BattleScene: AbstScene{
             Util.msg.set(format!"%s円を入手"(yen), cnt=> Color.YELLOW.bright(cnt)); cwait;
         }
         {//drop_item
-            import goods.goods;
+            import goods;
             foreach(e; Unit.enemies){
                 if(e.existsDropItem()){
                     IGoods drop_item = e.getDropItem();

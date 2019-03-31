@@ -3,9 +3,9 @@ module eq.eq;
 import laziness;
 import unit;
 import force;
-import goods.goods;
+import goods;
 import condition;
-import goods.item;
+import item;
 /**
     Eqによる攻撃値の増減は、全て加算・減算にする。
     Eqによる攻撃倍率の増減は、全て加算・減算にする。
@@ -151,7 +151,7 @@ private class EqValues{
             ,Pos.盾, /*lv*/30);}
         override void battleStart(Unit u){
             if(u.getCondition!"GOOD_LV2" == Condition.empty){
-                u.setCondition(Condition.盾, 1);
+                u.addCondition(Condition.盾, 1);
             }
         }
     });}

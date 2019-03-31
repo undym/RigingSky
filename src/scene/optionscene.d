@@ -76,7 +76,7 @@ class OptionScene: Scene{
                     }))
                     .add(createBtn("アイテム入手",{
                         int num = 99;
-                        import goods.item;
+                        import item;
                         Item.values
                             .each!((item){
                                 item.num += num;

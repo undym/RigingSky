@@ -4,26 +4,71 @@ import laziness;
 import scene.abstscene;
 import widget.btn;
 import widget.list;
-import goods.item;
+import item;
 import unit;
 
 private alias ParentType = Item.ParentType;
 private alias Type = Item.Type;
 
 
-private abstract class ItemSceneAbst: AbstScene{
+class ItemScene: AbstScene{
+    mixin ins;
+
+    enum Type{
+        FIELD,
+        DUNGEON,
+        BATTLE,
+    }
 
     protected{
         List list;
         Item info;
         Unit user;
+        Item choosed_item_in_battle;
     }
 
+    Type type;
     bool big_list = true;
     int pushed_type_btn_index;
 
     protected this(){
         list = new List;
+    }
+
+    void startInField(){
+        type = Type.FIELD;
+
+        foreach(u; Unit.players){
+            if(u.exists && !u.dead){
+                user = u;
+                break;
+            }
+        }
+
+        start();
+    }
+
+    void startInDungeon(){
+        type = Type.DUNGEON;
+        
+        foreach(u; Unit.players){
+            if(u.exists && !u.dead){
+                user = u;
+                break;
+            }
+        }
+
+        start();
+    }
+
+    Item startInBattle(Unit user){
+        type = Type.BATTLE;
+
+        this.user = user;
+        choosed_item_in_battle = null;
+
+        start();
+        return choosed_item_in_battle;
     }
 
     override protected void start(){
@@ -32,7 +77,7 @@ private abstract class ItemSceneAbst: AbstScene{
         super.start;
     }
 
-    void pushItemList(Item item);
+    override void cwait(){}
 
     protected void setup(){
         clear;
@@ -153,6 +198,21 @@ private abstract class ItemSceneAbst: AbstScene{
             DrawUnitDetail.set( user );
         });
 
+        if(type == Type.FIELD || type == Type.DUNGEON){
+            add(Bounds.Ratio.PLAYER_STATUS_BOXES,(bounds){
+                if(Mouse.left != 1){return;}
+                    
+                foreach(u; Unit.players){
+                    if(!u.exists || u.dead){continue;}
+
+                    if(u.bounds.contains( Mouse.point )){
+                        user = u;
+                        break;
+                    }
+                }
+            });
+
+        }
     }
 
     protected void setList(ParentType parent){
@@ -168,8 +228,8 @@ private abstract class ItemSceneAbst: AbstScene{
                             Util.msg.set("所持数0");
                             return;
                         }
-
-                        pushItemList( item );
+                        
+                        pushItemList(item);
                     },{
                         info = item;
                     });
@@ -179,127 +239,161 @@ private abstract class ItemSceneAbst: AbstScene{
                 });
         }
     }
-}
 
+    private void pushItemList(Item item){
+        final switch(type){
+            case Type.FIELD:
+                if(!item.canUseIn!"FIELD"){return;}
 
-class ItemSceneField: ItemSceneAbst{
-    mixin ins;
-
-    override void start(){
-        
-        foreach(u; Unit.players){
-            if(u.exists && !u.dead){
-                user = u;
-                break;
-            }
-        }
-
-        super.start;
-    }
-
-    override protected void pushItemList(Item item){
-        if(!item.canUseIn!"FIELD"){return;}
-
-        import force;
-        Unit[] targets;
-        if(item.getTargeting() & Targeting.SELECT){
-            targets = [user];
-        }else{
-            targets = getTargets( item.getTargeting(), user, cast(Unit[])Unit.players, 1 );
-        }
-
-        item.useIn!"FIELD"( targets );
-    }
-
-    override protected void setup(){
-        super.setup;
-
-        add(Bounds.Ratio.PLAYER_STATUS_BOXES,(bounds){
-            if(Mouse.left != 1){return;}
-                
-            foreach(u; Unit.players){
-                if(!u.exists || u.dead){continue;}
-
-                if(u.bounds.contains( Mouse.point )){
-                    user = u;
-                    break;
+                import force;
+                Unit[] targets;
+                if(item.getTargeting() & Targeting.SELECT){
+                    targets = [user];
+                }else{
+                    targets = getTargets( item.getTargeting(), user, cast(Unit[])Unit.players, 1 );
                 }
-            }
-        });
-    }
-}
 
-
-
-class ItemSceneDungeon: ItemSceneAbst{
-    mixin ins;
-
-    override void start(){
-        
-        foreach(u; Unit.players){
-            if(u.exists && !u.dead){
-                user = u;
+                item.useIn!"FIELD"( targets );
                 break;
-            }
-        }
+            case Type.DUNGEON:
+                if(!item.canUseIn!"DUNGEON"){return;}
 
-        super.start;
-    }
-
-    override protected void pushItemList(Item item){
-        if(!item.canUseIn!"DUNGEON"){return;}
-
-        import force;
-        Unit[] targets;
-        if(item.getTargeting() & Targeting.SELECT){
-            targets = [user];
-        }else{
-            targets = getTargets( item.getTargeting(), user, cast(Unit[])Unit.players, 1 );
-        }
-
-        item.useIn!"DUNGEON"( targets );
-    }
-
-    override protected void setup(){
-        super.setup;
-
-        add(Bounds.Ratio.PLAYER_STATUS_BOXES,(bounds){
-            if(Mouse.left != 1){return;}
-                
-            foreach(u; Unit.players){
-                if(!u.exists || u.dead){continue;}
-
-                if(u.bounds.contains( Mouse.point )){
-                    user = u;
-                    break;
+                import force;
+                Unit[] targets;
+                if(item.getTargeting() & Targeting.SELECT){
+                    targets = [user];
+                }else{
+                    targets = getTargets( item.getTargeting(), user, cast(Unit[])Unit.players, 1 );
                 }
-            }
-        });
+
+                item.useIn!"DUNGEON"( targets );
+                break;
+            case Type.BATTLE:
+                if(!item.canUseIn!"BATTLE"){return;}
+
+                choosed_item_in_battle = item;
+                end();
+                break;
+        }
     }
 }
 
 
 
-class ItemSceneBattle: ItemSceneAbst{
-    mixin ins;
 
-    private Item choosed_item;
 
-    /**nullable*/
-    Item startChoose(Unit user){
-        this.user = user;
+// class ItemSceneField: ItemSceneAbst{
+//     mixin ins;
 
-        choosed_item = null;
+//     override void start(){
+        
 
-        super.start;
+//         super.start;
+//     }
 
-        return choosed_item;
-    }
+//     override protected void pushItemList(Item item){
+//         if(!item.canUseIn!"FIELD"){return;}
 
-    override protected void pushItemList(Item item){
-        if(!item.canUseIn!"BATTLE"){return;}
+//         import force;
+//         Unit[] targets;
+//         if(item.getTargeting() & Targeting.SELECT){
+//             targets = [user];
+//         }else{
+//             targets = getTargets( item.getTargeting(), user, cast(Unit[])Unit.players, 1 );
+//         }
 
-        choosed_item = item;
-        end;
-    }
-}
+//         item.useIn!"FIELD"( targets );
+//     }
+
+//     override protected void setup(){
+//         super.setup;
+
+//         add(Bounds.Ratio.PLAYER_STATUS_BOXES,(bounds){
+//             if(Mouse.left != 1){return;}
+                
+//             foreach(u; Unit.players){
+//                 if(!u.exists || u.dead){continue;}
+
+//                 if(u.bounds.contains( Mouse.point )){
+//                     user = u;
+//                     break;
+//                 }
+//             }
+//         });
+//     }
+// }
+
+
+
+// class ItemSceneDungeon: ItemSceneAbst{
+//     mixin ins;
+
+//     override void start(){
+        
+//         foreach(u; Unit.players){
+//             if(u.exists && !u.dead){
+//                 user = u;
+//                 break;
+//             }
+//         }
+
+//         super.start;
+//     }
+
+//     override protected void pushItemList(Item item){
+//         if(!item.canUseIn!"DUNGEON"){return;}
+
+//         import force;
+//         Unit[] targets;
+//         if(item.getTargeting() & Targeting.SELECT){
+//             targets = [user];
+//         }else{
+//             targets = getTargets( item.getTargeting(), user, cast(Unit[])Unit.players, 1 );
+//         }
+
+//         item.useIn!"DUNGEON"( targets );
+//     }
+
+//     override protected void setup(){
+//         super.setup;
+
+//         add(Bounds.Ratio.PLAYER_STATUS_BOXES,(bounds){
+//             if(Mouse.left != 1){return;}
+                
+//             foreach(u; Unit.players){
+//                 if(!u.exists || u.dead){continue;}
+
+//                 if(u.bounds.contains( Mouse.point )){
+//                     user = u;
+//                     break;
+//                 }
+//             }
+//         });
+//     }
+// }
+
+
+
+// class ItemSceneBattle: ItemSceneAbst{
+//     mixin ins;
+
+//     private Item choosed_item;
+
+//     /**nullable*/
+//     Item startChoose(Unit user){
+//         this.user = user;
+
+//         choosed_item = null;
+
+//         super.start;
+
+//         return choosed_item;
+//     }
+
+//     override protected void pushItemList(Item item){
+//         if(!item.canUseIn!"BATTLE"){return;}
+
+//         choosed_item = item;
+//         end;
+//     }
+// }

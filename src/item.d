@@ -1,10 +1,11 @@
-module goods.item;
+module item;
 
 import laziness;
 import unit;
 import force;
 import effect;
-import goods.goods;
+import goods;
+import condition;
 
 abstract class Item: IGoods{
     mixin MGoods;
@@ -16,6 +17,11 @@ abstract class Item: IGoods{
         蘇生,
         HP回復,
         MP回復,
+
+        状態解除,
+        状態強化,
+        状態弱化,
+
         成長,
         宝物鍵,
         財宝鍵,
@@ -25,6 +31,7 @@ abstract class Item: IGoods{
 
     enum ParentType: Type[]{
         回復 = [Type.蘇生, Type.HP回復, Type.MP回復],
+        状態 = [Type.状態解除, Type.状態強化, Type.状態弱化],
         成長 = [Type.成長],
         鍵 = [Type.宝物鍵, Type.財宝鍵],
         素材 = [Type.素材],
@@ -182,25 +189,6 @@ unittest{
 }
 
 
-private void healHP(Unit target, double value){
-    target.hp += value;
-    target.fixPrm;
-
-    
-    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.GREEN );
-    Util.msg.set(format!"%sのHPが%.0f回復した"(target.name, value));
-}
-
-private void healMP(Unit target, double value){
-    target.mp += value;
-    target.fixPrm;
-
-    
-    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.PINK );
-    Util.msg.set(format!"%sのMPが%.0f回復した"(target.name, value));
-}
-
-
 
 private class ItemValues{
     //-------------------------------------------------------------
@@ -209,7 +197,7 @@ private class ItemValues{
     //
     //-------------------------------------------------------------
     @Value
-    static Item  サンタクララ薬(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item サンタクララ薬(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("一体をHP1で蘇生",
             Type.蘇生, /*rank*/0, /*box*/true);
 
@@ -232,7 +220,7 @@ private class ItemValues{
     //
     //-------------------------------------------------------------
     @Value
-    static Item  スティックパン(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item スティックパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+10",
             Type.HP回復, /*rank*/0, /*box*/true);
 
@@ -243,7 +231,7 @@ private class ItemValues{
         override int getPrice(){return 20;}
     });}
     @Value
-    static Item  ロングスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item ロングスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+20",
             Type.HP回復, /*rank*/1, /*box*/true);
 
@@ -254,7 +242,7 @@ private class ItemValues{
         override int getPrice(){return 60;}
     });}
     @Value
-    static Item  ダブルスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item ダブルスティックパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+40",
             Type.HP回復, /*rank*/2, /*box*/true);
 
@@ -265,7 +253,7 @@ private class ItemValues{
         override int getPrice(){return 200;}
     });}
     @Value
-    static Item  苺ちゃんのパン(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 苺ちゃんのパン(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+80",
             Type.HP回復, /*rank*/3, /*box*/true);
 
@@ -275,7 +263,7 @@ private class ItemValues{
         }
     });}
     @Value
-    static Item  ドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item ドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+10%"
             ,Type.HP回復, /*rank*/3, /*box*/true);
 
@@ -285,7 +273,7 @@ private class ItemValues{
         }
     });}
     @Value
-    static Item  LAドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item LAドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+20%"
             ,Type.HP回復, /*rank*/4, /*box*/true);
 
@@ -296,7 +284,7 @@ private class ItemValues{
         override string toString(){return "L.A.ドラッグ";}
     });}
     @Value
-    static Item  ロシアドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item ロシアドラッグ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+30%"
             ,Type.HP回復, /*rank*/5, /*box*/true);
 
@@ -306,7 +294,7 @@ private class ItemValues{
         }
     });}
     @Value
-    static Item  スティックパン超キラキラ(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item スティックパン超キラキラ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("HP+999"
             ,Type.HP回復, /*rank*/9, /*box*/true);
 
@@ -322,7 +310,7 @@ private class ItemValues{
     //
     //-------------------------------------------------------------
     @Value
-    static Item  蛍草(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 蛍草(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("MP+10"
             ,Type.MP回復, /*rank*/0, /*box*/true);
 
@@ -330,11 +318,12 @@ private class ItemValues{
                 healMP( u, 10 );
             });
         }
+        override int getPrice(){return 200;}
     });}
     @Value
-    static Item  赤葉草(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 赤葉草(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("MP+20"
-            ,Type.MP回復, /*rank*/2, /*box*/true);
+            ,Type.MP回復, /*rank*/3, /*box*/true);
 
             setUseIn!("FIELD","DUNGEON","BATTLE")((u){
                 healMP( u, 20 );
@@ -343,11 +332,36 @@ private class ItemValues{
     });}
     //-------------------------------------------------------------
     //
+    //状態解除
+    //
+    //-------------------------------------------------------------
+    @Value
+    static Item ハンマー(){static Item res; return res !is null ? res : (res = new class Item{
+        this(){super("＜眠＞状態を解除"
+            ,Type.状態解除, /*rank*/4, /*box*/true);
+
+            setUseIn!("FIELD","DUNGEON","BATTLE")((u){
+                cureCondition( u, Condition.眠 );
+            });
+        }
+    });}
+    //-------------------------------------------------------------
+    //
+    //状態強化
+    //
+    //-------------------------------------------------------------
+    //-------------------------------------------------------------
+    //
+    //状態弱化
+    //
+    //-------------------------------------------------------------
+    //-------------------------------------------------------------
+    //
     //成長
     //
     //-------------------------------------------------------------
     @Value
-    static Item  いざなみの命(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item いざなみの命(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("最大HP+1"
             ,Type.成長, /*rank*/9, /*box*/true);
 
@@ -357,7 +371,7 @@ private class ItemValues{
         }
     });}
     @Value
-    static Item  この花の咲くや姫(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item この花の咲くや姫(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("力+1"
             ,Type.成長, /*rank*/9, /*box*/true);
 
@@ -367,7 +381,7 @@ private class ItemValues{
         }
     });}
     @Value
-    static Item  つくよみの命(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item つくよみの命(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("魔+1"
             ,Type.成長, /*rank*/9, /*box*/true);
 
@@ -377,7 +391,7 @@ private class ItemValues{
         }
     });}
     @Value
-    static Item  よもつおお神(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item よもつおお神(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("光+1"
             ,Type.成長, /*rank*/9, /*box*/true);
 
@@ -393,19 +407,19 @@ private class ItemValues{
     //-------------------------------------------------------------
     //宝物鍵
     @Value
-    static Item  丸い鍵(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 丸い鍵(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("丸い箱を開けられる"
             ,Type.宝物鍵, /*rank*/3, /*box*/true);}
     });}
     //-------------------------------------------------------------
     //財宝鍵
     @Value
-    static Item  はじまりの丘の財宝の鍵(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item はじまりの丘の財宝の鍵(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super(""
             ,Type.財宝鍵, /*rank*/10, /*box*/false);}
     });}
     @Value
-    static Item  見知らぬ海岸の財宝の鍵(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 見知らぬ海岸の財宝の鍵(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super(""
             ,Type.財宝鍵, /*rank*/10, /*box*/false);}
     });}
@@ -415,52 +429,52 @@ private class ItemValues{
     //
     //-------------------------------------------------------------
     @Value
-    static Item  石(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 石(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("石だ"
             ,Type.素材, /*rank*/0, /*box*/true);}
     });}
     @Value
-    static Item  草(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 草(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("草だ"
             ,Type.素材, /*rank*/0, /*box*/true);}
     });}
     @Value
-    static Item  泥(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 泥(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super(""
             ,Type.素材, /*rank*/0, /*box*/true);}
     });}
     @Value
-    static Item  枝(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 枝(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super(""
             ,Type.素材, /*rank*/0, /*box*/true);}
     });}
     @Value
-    static Item  腐葉土(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 腐葉土(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("土"
             ,Type.素材, /*rank*/1, /*box*/true);}
     });}
     @Value
-    static Item  ピートモス(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item ピートモス(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("土"
             ,Type.素材, /*rank*/1, /*box*/true);}
     });}
     @Value
-    static Item  セメント(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item セメント(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super(""
             ,Type.素材, /*rank*/2, /*box*/true);}
     });}
     @Value
-    static Item  コンクリート(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item コンクリート(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super(""
             ,Type.素材, /*rank*/2, /*box*/true);}
     });}
     @Value
-    static Item  モルタル(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item モルタル(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super(""
             ,Type.素材, /*rank*/2, /*box*/true);}
     });}
     @Value
-    static Item  少女の心を持ったおっさん(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item 少女の心を持ったおっさん(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("いつもプリキュアの話をしている"
             ,Type.素材, /*rank*/6, /*box*/true);}
     });}
@@ -470,13 +484,13 @@ private class ItemValues{
     //
     //-------------------------------------------------------------
     @Value
-    static Item  F1のメモ(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item F1のメモ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("F1キーでオプション画面が開く"
             ,Type.メモ, /*rank*/0, /*box*/true);}
         override int getMaxNum(){return 1;}
     });}
     @Value
-    static Item  メモのメモ(){static Item res; return res !is null ? res : (res = new class Item{
+    static Item メモのメモ(){static Item res; return res !is null ? res : (res = new class Item{
         this(){super("最強らしい"
             ,Type.メモ, /*rank*/8, /*box*/true);}
         override int getMaxNum(){return 1;}

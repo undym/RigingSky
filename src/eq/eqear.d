@@ -3,7 +3,7 @@ module eq.eqear;
 import laziness;
 import unit;
 import force;
-import goods.goods;
+import goods;
 
 /**
     EqEarによる攻撃値の増減は全て乗算・除算にする。

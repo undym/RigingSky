@@ -1,4 +1,4 @@
-module goods.goods;
+module goods;
 
 import undym;
 import util;

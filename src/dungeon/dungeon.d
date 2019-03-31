@@ -5,9 +5,9 @@ import dungeon.area;
 import dungeon.event;
 import unit;
 import job;
-import goods.goods;
+import goods;
 import eq;
-import goods.item;
+import item;
 
 abstract class Dungeon{
     mixin Values!DungeonValues;
@@ -78,8 +78,13 @@ abstract class Dungeon{
         ダンジョン踏破時の効果。
         初回クリア時なら、clear_num == 1.
     */
-    void runClearEvent(const int clear_num){
-        
+    void runClearEvent(const int clear_num){}
+
+    long getMoneyReward(){
+        double rank_mul = (1 + getRank() * 0.2);
+        double enemy_lv_mul = cast(double)(getEnemyLv() * 3 + 100) / 100;
+        long res = cast(long)(100 * rank_mul * enemy_lv_mul) + getAU();
+        return res * (100 + clear_num) / 100;
     }
 
     Event rndEvent(){
@@ -211,7 +216,7 @@ private class DungeonValues{
     });}
     @Value
     static Dungeon 見知らぬ海岸(){static Dungeon res; return res !is null ? res : (res = new class Dungeon{
-        this(){super(Area.再構成トンネル, /*rank*/1, /*lv*/1, /*au*/100, FRect(0.7, 0.1, 0.3, 0.1));}
+        this(){super(Area.再構成トンネル, /*rank*/1, /*lv*/3, /*au*/70, FRect(0.7, 0.1, 0.3, 0.1));}
         override bool isVisible()                {return Dungeon.はじまりの丘.clear_num > 0;}
         override IGoods getTresureKey()          {return Item.見知らぬ海岸の財宝の鍵;}
         override Tresure[] getTresures()         {return [Tresure(Eq.布, 1)];}
@@ -223,7 +228,7 @@ private class DungeonValues{
             }
 
             EUnit e = Unit.enemies[0];
-            Job.剣士.setEnemy(e, /*lv*/3);
+            Job.剣士.setEnemy(e, /*lv*/4);
             e.name = "ボス";
             e.prm!"MAX_HP".base = 45;
         }
@@ -233,7 +238,7 @@ private class DungeonValues{
             }
 
             EUnit e = Unit.enemies[0];
-            Job.魔法使い.setEnemy(e, /*lv*/4);
+            Job.魔法使い.setEnemy(e, /*lv*/5);
             e.name = "EX";
             e.prm!"MAX_HP".base = 95;
             e.setDropItem( Eq.魔ヶ玉の手首飾り );

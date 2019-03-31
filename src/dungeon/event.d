@@ -4,7 +4,7 @@ import laziness;
 import dungeon.dungeon;
 import effect;
 import unit;
-import goods.item;
+import item;
 
 private alias EvDlgt = void delegate();
 
@@ -18,7 +18,7 @@ class Event{
         happenInner();
     }
 
-    void happenInner(){
+    protected void happenInner(){
 
     }
 
@@ -143,7 +143,7 @@ private class EventValues{
         override void happenInner(){
             //ダンジョン特有入手アイテム
             auto trend_items = Dungeon.now.getTrendItems();
-            if(trend_items && uniform(0.0,1.0) <= 0.15){
+            if(trend_items && uniform(0.0,1.0) <= 0.25){
                 trend_items.choice.add(1); cwait;
             }
             //通常入手アイテム
@@ -223,7 +223,7 @@ private class EventValues{
     @Value
     static Event REST(){static Event res; return res !is null ? res : (res = new class Event{
         override void happenInner(){
-            if(uniform(0.0,1.0) < 0.1f){
+            if(uniform(0.0,1.0) < 0.1){
                 Util.msg.set("トイレ休憩した...");
             }else{
                 Util.msg.set("休憩した...");
@@ -260,12 +260,13 @@ private class EventValues{
                 if(!p.exists || p.dead){continue;}
 
                 Effect.atk( p.center, Color.RED );
-                double dmg = p.prm!"MAX_HP".total / 5;
+                double dmg = p.prm!"MAX_HP".total / 4;
                 if(dmg > 99){dmg = 99;}
                 p.doDmg( dmg );
                 p.judgeDead;
             }
-            //罠に引っかかった場合なにもイベントを発生させない
+            
+            Event.TRAP_BROKEN.happen();
         }
         override void rightClick(){
             Util.msg.set("解除成功");
@@ -289,13 +290,13 @@ private class EventValues{
                 if(!p.exists || p.dead){continue;}
 
                 Effect.atk( p.center, Color.RED );
-                double dmg = p.prm!"MAX_HP".total / 5;
+                double dmg = p.prm!"MAX_HP".total / 4;
                 if(dmg > 199){dmg = 199;}
                 p.doDmg( dmg );
                 p.judgeDead;
             }
 
-            //罠に引っかかった場合なにもイベントを発生させない
+            Event.TRAP_BROKEN.happen();
         }
         override void rightClick(){
             Util.msg.set("解除成功");
@@ -344,6 +345,10 @@ private class EventValues{
 
                     Dungeon.now.clear_num++;
                     Util.msg.set(format!"[%s]を踏破した！"( Dungeon.now ), cnt=> Color.CYAN.bright(cnt)); cwait;
+
+                    long money = Dungeon.now.getMoneyReward();
+                    PlayData.yen += money;
+                    Util.msg.set(format!"報奨金%s円"(money), cnt=>Color.YELLOW.bright(cnt)); cwait;
 
                     if(Dungeon.now.clear_num == 1){
                         foreach(reward; Dungeon.now.getFirstClearRewards()){

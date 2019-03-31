@@ -8,7 +8,7 @@ import tec;
 import condition;
 import job;
 import eq;
-import goods.goods;
+import goods;
 
 abstract class Unit{
 
@@ -86,6 +86,7 @@ abstract class Unit{
 
     protected PrmSet[] prm_sets;
     protected ConditionSet[] condition_sets;
+    // protected InvisibleCondition[] invisible_conditions;
     protected Eq[] eqs;
     protected EqEar[] eq_ears;
 
@@ -161,15 +162,16 @@ abstract class Unit{
         set.condition = Condition.empty;
         set.value = 0;
     }
-    void setCondition(Condition cond, int value){
-        auto set = condition_sets[ cond.type ];
-        set.condition = cond;
-        set.value = value < cond.max_value ? value : cond.max_value;
-    }
+    // void setCondition(Condition cond, int value){
+    //     auto set = condition_sets[ cond.type ];
+    //     set.condition = cond;
+    //     set.value = value < cond.max_value ? value : cond.max_value;
+    // }
     Condition getCondition(Condition.Type type) {return condition_sets[type].condition;}
     Condition getCondition(string type)()       {return getCondition( mixin("Condition.Type."~type) );}
     int getConditionValue(Condition.Type type)  {return condition_sets[ type ].value;}
     int getConditionValue(string type)()        {return getCondition( mixin("Condition.Type."~type) );}
+    bool isCondition(Condition cond) {return cond == condition_sets[ cond.type ];}
     //すでにそのConditionならvalueを追加、Conditionが違った場合、新しいConditionとvalueをセット。
     void addCondition(Condition cond, int value){
         auto set = condition_sets[ cond.type ];
@@ -182,6 +184,15 @@ abstract class Unit{
         if(set.value <= 0)                          {set.condition = Condition.empty;}
         else if(set.value > set.condition.max_value){set.value = set.condition.max_value;}
     }
+    //------------------------------------------------------
+    //
+    //Condition
+    //
+    //------------------------------------------------------
+    // void clearInvisibleCondition(){invisible_conditions = [];}
+    // void addInvisibleCondition(InvisibleCondition incond){
+    //     invisible_conditions ~= incond;
+    // }
     //------------------------------------------------------
     //
     //Eq
@@ -236,6 +247,11 @@ abstract class Unit{
         foreach(set; condition_sets){
             dlgt( set.condition );
         }
+
+        // invisible_conditions = invisible_conditions.remove!(incond=> !incond.exists);
+        // foreach(incond; invisible_conditions){
+        //     dlgt( incond );
+        // }
     }
     //------------------------------------------------------
     //
@@ -261,7 +277,7 @@ abstract class Unit{
     void judgeDead(){
         if(!exists || dead){return;}
 
-        if(hp <= 0){
+        if(hp < 1){
             dead = true;
             Util.msg.set(format!"%sは死んだ"(name)); cwait;
         }
@@ -366,7 +382,7 @@ class PUnit: Unit{
                 if(cast(double)(i + 1) / learnings.length <= ratio || *lv >= Job.MAX_LV){
                     setLearned(tec, true);
                     Util.msg.set(format!"%sは[%s]を覚えた！"( name, tec ), cnt=> Color.SALMON.bright(cnt)); cwait;
-                    Util.msg.set(format!"-> %s"( tec.info ), cnt=> Color.WHITE.bright(cnt)); cwait;
+                    Util.msg.set(tec.info, cnt=> Color.WHITE.bright(cnt)); cwait;
                     
                     setLearningTec(tec);
                 }
@@ -407,7 +423,7 @@ class EUnit: Unit{
         if(ret is null){
             ret = (e,units){
 
-                Tec[] actives = e.tecs.filter!(t=> t.passive).array;
+                Tec[] actives = e.tecs.filter!(t=> !t.passive).array;
                 int search_num = actives ? 7 : 0;
                 
                 foreach(i; 0..search_num){
@@ -474,3 +490,71 @@ string getPrmName(Unit.Prm prm){
         case Prm.EP_CHARGE: return "EP_CHARGE";
     }
 }
+
+
+void healHP(Unit target, double value){
+    if(target.dead){return;}
+
+    target.hp += value;
+    target.fixPrm;
+    
+    import effect: Effect;
+    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.GREEN );
+    Util.msg.set(format!"%sのHPが%.0f回復した"(target.name, value)); cwait;
+}
+
+
+void healMP(Unit target, double value){
+    if(target.dead){return;}
+
+    target.mp += value;
+    target.fixPrm;
+
+    import effect: Effect;
+    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.PINK );
+    Util.msg.set(format!"%sのMPが%.0f回復した"(target.name, value)); cwait;
+}
+
+
+void healTP(Unit target, double value){
+    if(target.dead){return;}
+
+    target.tp += value;
+    target.fixPrm;
+    
+    import effect: Effect;
+    Effect.flipStr( format!"%.0f"(value), target.rndCenter, Color.CYAN );
+    Util.msg.set(format!"%sのTPが%.0f回復した"(target.name, value)); cwait;
+}
+
+
+void revive(Unit target, double hp){
+    if(!target.dead){return;}
+
+    target.dead = false;
+    target.hp = hp;
+    target.fixPrm;
+
+    import effect: Effect;
+    Effect.flipStr( format!"%.0f"(hp), target.rndCenter, Color.GREEN );
+    Util.msg.set(target.name~"は蘇った"); cwait;
+}
+
+
+void cureCondition(Unit target, Condition.Type type){
+    Condition cond = target.getCondition(type);
+    if(cond == Condition.empty){return;}
+
+    target.clearCondition( type );
+
+    import effect: Effect;
+    Effect.状態解除( target.center );
+    Util.msg.set(format!"%sの%sは解除された"(target.name, cond)); cwait;
+}
+
+void cureCondition(Unit target, Condition cond){
+    if(!target.isCondition(cond)){return;}
+
+    cureCondition(target, cond.type);
+}
+

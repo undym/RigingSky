@@ -70,7 +70,7 @@ private ILayout createBtn(){
         auto box = new PackedYLayout( Bounds.BTN_H );
         box.add(new Btn("アイテム",{
             import scene.itemscene;
-            ItemSceneDungeon.ins.start;
+            ItemScene.ins.startInDungeon();
         },{
 
         }));

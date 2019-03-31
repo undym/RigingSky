@@ -66,7 +66,7 @@ class FieldScene: AbstScene{
 
 
 private ILayout createBtn(){
-    import goods.building;
+    import building;
 
     FrameLayout l = new FrameLayout;
     l.add({
@@ -93,7 +93,7 @@ private ILayout createBtn(){
         }
 
         addBtn(
-            ()=> Building.技能認定所.getComposition().exp > 0
+            ()=> Building.教習所.getComposition().exp > 0
             ,"技のセット",{
                 import scene.settecscene;
                 SetTecScene.ins.start;
@@ -123,7 +123,7 @@ private ILayout createBtn(){
             }
         );
         addBtn(
-            ()=> Building.瞑想場.getComposition().exp > 0
+            ()=> Building.祠.getComposition().exp > 0
             ,"瞑想",{
                 import scene.meisouscene;
                 MeisouScene.ins.start;
@@ -146,7 +146,7 @@ private ILayout createBtn(){
             ()=> true
             ,"アイテム",{
                 import scene.itemscene;
-                ItemSceneField.ins.start;
+                ItemScene.ins.startInField();
                 FieldScene.ins.setup();
             },{
 
@@ -211,8 +211,14 @@ private ILayout createMain(){
                     info_dungeon = d;
                 });
 
-                btn.set!"frame"(Color.WHITE);
-                btn.set!"frame_on"(Color.WHITE);
+
+                if(d.clear_num > 0){
+                    btn.set!"frame"(Color(255,255,100));
+                    btn.set!"frame_on"(Color(255,255,100));
+                }else{
+                    btn.set!"frame"(Color.WHITE);
+                    btn.set!"frame_on"(Color.WHITE);
+                }
 
                 return btn;
             }());

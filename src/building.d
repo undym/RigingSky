@@ -1,7 +1,7 @@
-module goods.building;
+module building;
 
-import goods.goods;
-import goods.item;
+import goods;
+import item;
 import undym;
 
 abstract class Building{
@@ -28,7 +28,7 @@ abstract class Building{
 private class BuildingValues{
 
     @Value
-    static Building 瞑想場(){static Building res; return res !is null ? res : (res = new class Building{
+    static Building 祠(){static Building res; return res !is null ? res : (res = new class Building{
         this(){super("瞑想ができるようになる");}
         override Composition getComposition(){static Composition com; return com !is null ? com : (com = new class Composition{
             this(){super(
@@ -53,11 +53,11 @@ private class BuildingValues{
                 ,/*num*/1
                 ,/*limit*/1
                 ,[
-                    Material(Item.泥, 3),
-                    Material(Item.石, 3),
+                    Material(Item.泥, 2),
+                    Material(Item.石, 2),
                 ]
             );}
-            override bool isVisible(){return Building.瞑想場.getComposition().exp > 0;}
+            override bool isVisible(){return true;}
         });}
     });}
     @Value
@@ -69,15 +69,15 @@ private class BuildingValues{
                 ,/*num*/1
                 ,/*limit*/1
                 ,[
-                    Material(Item.泥, 4),
-                    Material(Item.枝, 4),
+                    Material(Item.泥, 3),
+                    Material(Item.枝, 3),
                 ]
             );}
-            override bool isVisible(){return Building.更衣室.getComposition().exp > 0;}
+            override bool isVisible(){return Building.祠.getComposition().exp > 0;}
         });}
     });}
     @Value
-    static Building 技能認定所(){static Building res; return res !is null ? res : (res = new class Building{
+    static Building 教習所(){static Building res; return res !is null ? res : (res = new class Building{
         this(){super("技のセットができるようになる");}
         override Composition getComposition(){static Composition com; return com !is null ? com : (com = new class Composition{
             this(){super(
